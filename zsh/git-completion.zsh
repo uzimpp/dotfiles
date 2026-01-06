@@ -1,1 +1,0 @@
-/Users/uzimp/dotfiles/zsh/git-completion.zsh
