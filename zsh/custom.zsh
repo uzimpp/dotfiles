@@ -1,0 +1,1 @@
+/Users/uzimp/dotfiles/zsh/custom.zsh
