@@ -13,8 +13,15 @@ return {
     vim.g.nord_uniform_diff_background = true    -- enables/disables colorful backgrounds when used in diff mode
     vim.g.nord_bold = false                      -- enables/disables bold
 
-    -- Configure theme - init.lua will load it based on THEME env var
-    -- Don't call require('nord').set() here - let init.lua handle colorscheme loading
+    -- Make neo-tree background darker (nord_contrast already helps, but add custom highlights)
+    vim.defer_fn(function()
+      -- Nord uses darker colors for sidebars when contrast is enabled
+      -- Add additional custom highlights for neo-tree
+      vim.api.nvim_set_hl(0, 'NeoTreeNormal', { bg = '#2E3440' }) -- darker than base #3B4252
+      vim.api.nvim_set_hl(0, 'NeoTreeNormalNC', { bg = '#2E3440' })
+      vim.api.nvim_set_hl(0, 'NeoTreeEndOfBuffer', { bg = '#2E3440' })
+      vim.api.nvim_set_hl(0, 'NeoTreeCursorLine', { bg = '#3B4252' })
+    end, 100)
 
     local bg_transparent = true
 
@@ -28,4 +35,3 @@ return {
     vim.keymap.set('n', '<leader>bg', toggle_transparency, { noremap = true, silent = true })
   end,
 }
-

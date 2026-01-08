@@ -11,14 +11,14 @@ The theme is controlled by the `THEME` environment variable set in `~/.config/zs
 - **nordic** - Nordic color palette (default)
 - **nord** - Nord color palette  
 - **onedark** - One Dark color palette
-- **catpuccin** - Catppuccin Mocha color palette
+- **catppuccin** - Catppuccin Mocha color palette
 - **anysphere** - [Cursor Dark Anysphere theme](https://github.com/evanlouie/cursor-dark-anysphere.nvim) - Proper Anysphere theme with VS Code fidelity
 
 ### Changing Themes
 
 Edit `~/.config/zsh/.zshenv`:
 ```bash
-export THEME="anysphere"  # or: nordic, nord, onedark, catpuccin
+export THEME="anysphere"  # or: nordic, nord, onedark, catppuccin
 ```
 
 Then restart Neovim:
@@ -41,7 +41,7 @@ Each theme has its own plugin configuration in `lua/plugins/themes/`:
 - `nordic.lua` - Nord theme (shaunsingh/nord.nvim)
 - `nord.lua` - Nord theme (shaunsingh/nord.nvim)
 - `onedark.lua` - OneDark theme (navarasu/onedark.nvim)
-- `catpuccin.lua` - Catppuccin theme (catppuccin/nvim)
+- `catppuccin.lua` - Catppuccin theme (catppuccin/nvim)
 - `anysphere.lua` - **Cursor Dark Anysphere theme** (evanlouie/cursor-dark-anysphere.nvim)
   - Full VS Code compatibility
   - 160+ colors

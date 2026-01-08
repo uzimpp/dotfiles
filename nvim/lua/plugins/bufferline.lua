@@ -1,5 +1,6 @@
 return {
   'akinsho/bufferline.nvim',
+  lazy = false, -- Load at startup for UI
   dependencies = {
     'moll/vim-bbye',
     'nvim-tree/nvim-web-devicons',

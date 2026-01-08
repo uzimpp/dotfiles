@@ -6,7 +6,7 @@ local M = {}
 -- Get current theme from environment
 function M.get_theme()
   local env_theme = os.getenv('NVIM_THEME') or os.getenv('THEME')
-  return env_theme or 'nordic'
+  return env_theme or 'anysphere'
 end
 
 -- Theme to colorscheme mapping
@@ -15,10 +15,10 @@ function M.get_colorscheme(theme)
     nordic = 'nord',
     nord = 'nord',
     onedark = 'onedark',
-    catpuccin = 'catppuccin',
+    catppuccin = 'catppuccin',
     anysphere = 'cursor-dark-anysphere',
   }
-  return theme_map[theme] or 'nord'
+  return theme_map[theme] or 'cursor-dark-anysphere'
 end
 
 -- Apply theme

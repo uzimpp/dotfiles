@@ -1,7 +1,12 @@
 return {
   'nvim-neo-tree/neo-tree.nvim',
-  event = 'VeryLazy',
   branch = 'v3.x',
+  cmd = 'Neotree',  -- Load on command, not at startup
+  keys = {
+    { '<leader>e', '<cmd>Neotree toggle<CR>', desc = 'Toggle Explorer' },
+    { '<leader>w', '<cmd>Neotree float<CR>', desc = 'Float Explorer' },
+    { '\\', '<cmd>Neotree reveal<CR>', desc = 'Reveal in Explorer' },
+  },
   dependencies = {
     'nvim-lua/plenary.nvim',
     'nvim-tree/nvim-web-devicons',
@@ -59,12 +64,14 @@ return {
           -- indent guides
           with_markers = true,
           indent_marker = '│',
-          last_indent_marker = '└',
+          last_indent_marker = '│',
+          -- last_indent_marker = '└',
+
           highlight = 'NeoTreeIndentMarker',
           -- expander config, needed for nesting files
           with_expanders = nil, -- if nil and file nesting is enabled, will enable expanders
-          expander_collapsed = '',
-          expander_expanded = '',
+          expander_collapsed = '',
+          expander_expanded = '',
           expander_highlight = 'NeoTreeExpander',
         },
         icon = {

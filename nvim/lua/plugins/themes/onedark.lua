@@ -37,7 +37,15 @@ return {
       colors = {
         -- purple = '#56b6c2',
       }, -- Override default colors
-      highlights = {}, -- Override highlight groups
+      highlights = function(colors)
+        return {
+          -- Make neo-tree background darker than normal background
+          NeoTreeNormal = { bg = '#1e222a' }, -- darker than base #282c34
+          NeoTreeNormalNC = { bg = '#1e222a' },
+          NeoTreeEndOfBuffer = { bg = '#1e222a' },
+          NeoTreeCursorLine = { bg = '#282c34' },
+        }
+      end, -- Override highlight groups
 
       -- Plugins Config --
       diagnostics = {
@@ -71,4 +79,3 @@ return {
     vim.keymap.set('n', '<leader>bg', toggle_transparency, { noremap = true, silent = true })
   end,
 }
-

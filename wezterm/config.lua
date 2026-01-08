@@ -13,7 +13,7 @@ config.window_decorations = "RESIZE"
 config.check_for_updates = false
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = false
-config.font_size = 13
+config.font_size = 12.5
 config.font = wezterm.font("GeistMono Nerd Font Mono", { weight = "Regular" })
 config.enable_tab_bar = false
 config.window_padding = {

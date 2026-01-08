@@ -1,19 +1,32 @@
--- Plugin specifications
--- Only include plugins that exist in this directory
-
+-- Load all custom plugins (without LazyVim defaults)
 return {
-  require 'plugins.alpha',
+  -- Theme
+  require 'plugins.themes.anysphere',
+  
+  -- Core functionality
+  require 'plugins.lsp',
   require 'plugins.autocompletion',
+  require 'plugins.treesitter',
+  
+  -- UI components
+  require 'plugins.ui',
+  require 'plugins.alpha',
   require 'plugins.bufferline',
+  require 'plugins.lualine',
+  
+  -- File management
+  require 'plugins.neo-tree',
+  require 'plugins.telescope',
+  require 'plugins.oil',
+  
+  -- Utilities
   require 'plugins.comment',
   require 'plugins.gitsigns',
   require 'plugins.indent-blankline',
-  require 'plugins.lazygit',
-  require 'plugins.lsp',
-  require 'plugins.lualine',
   require 'plugins.misc',
-  require 'plugins.neo-tree',
-  require 'plugins.oil',
-  require 'plugins.telescope',
-  require 'plugins.treesitter',
+  require 'plugins.trouble',
+  require 'plugins.session',
+  require 'plugins.harpoon',
+  require 'plugins.dap',
+  require 'plugins.lazygit',
 }
