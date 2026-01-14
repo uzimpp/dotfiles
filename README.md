@@ -1,100 +1,177 @@
-# Dotfiles
+# 🎨 Dotfiles
 
-Unified dotfiles configuration with a centralized theme system.
+Modern, minimal dotfiles with a **unified theme system** across all tools.
 
-## How It Works
+![Theme: Anysphere](https://img.shields.io/badge/Theme-Anysphere-181818?style=flat-square&labelColor=61afef)
+![Font: Geist Mono](https://img.shields.io/badge/Font-Geist%20Mono-orange?style=flat-square)
+![Shell: Zsh](https://img.shields.io/badge/Shell-Zsh-4EAA25?style=flat-square)
 
-All tools (Neovim, WezTerm, Kitty, Starship) share a single theme controlled by the `THEME` environment variable in `~/.config/zsh/.zshenv`.
+## ✨ Features
 
-**Theme Flow:**
-1. `THEME` is set in `~/.config/zsh/.zshenv`
-2. **WezTerm** reads `THEME` and applies matching color scheme
-3. **Kitty** uses theme-specific config files (included in `kitty.conf`)
-4. **Neovim** reads `THEME` on startup and loads the matching colorscheme
-5. **Starship** inherits colors from the terminal (WezTerm/Kitty) automatically
+- 🎨 **Unified Theming** - One `THEME` variable controls all tools
+- 🖥️ **WezTerm** - GPU-accelerated terminal with custom themes
+- ⚡ **Neovim** - Full IDE setup with LSP, completion, and more
+- 🚀 **Starship** - Fast, minimal prompt
+- 📁 **Neo-tree** - File explorer with git integration
+- 🔍 **Telescope** - Fuzzy finder for everything
+- 💅 **Consistent Font** - Geist Mono Nerd Font everywhere
 
-## Available Themes
+## 🚀 Quick Start
 
-- `nord` / `nordic` - Nord theme
-- `onedark` - OneDark theme
-- `catppuccin` - Catppuccin Mocha theme
-- `anysphere` - Anysphere/Cursor theme
-
-## Setup
-
-### Initial Installation
-
-**Recommended:** Run the automated setup script:
+### 1. Install Dependencies
 
 ```bash
-cd dotfiles
+./install.sh --all
+```
+
+Or install selectively:
+```bash
+./install.sh              # Essential + terminal tools
+./install.sh --dev        # Add development tools
+./install.sh --apps       # Add GUI apps
+./install.sh --fonts      # Add Nerd Fonts
+./install.sh --list       # Show all packages
+```
+
+### 2. Setup Symlinks
+
+```bash
 ./setup.sh
 ```
 
-The script will:
-- Create all necessary symlinks with absolute paths
-- Remove existing files/directories if they exist (to avoid conflicts)
-- Automatically add the source line to `~/.zshrc` if needed
-
-**Manual Installation (alternative):**
-
-If you prefer to set up manually, use symlinks so that updating the dotfiles repo automatically updates your configs:
+### 3. Reload Shell
 
 ```bash
-cd dotfiles
-
-# WezTerm (must be in home directory, not .config/)
-ln -s "$(pwd)/wezterm/.wezterm.lua" ~/.wezterm.lua
-ln -s "$(pwd)/wezterm/config.lua" ~/config.lua
-ln -s "$(pwd)/wezterm/events.lua" ~/events.lua
-
-# Other configs (standard XDG directories)
-# Remove existing directories if they exist, then link
-rm -rf ~/.config/kitty ~/.config/nvim ~/.config/starship.toml ~/.config/zsh
-ln -s "$(pwd)/kitty" ~/.config/kitty
-ln -s "$(pwd)/nvim" ~/.config/nvim
-ln -s "$(pwd)/starship/starship.toml" ~/.config/starship.toml
-ln -s "$(pwd)/zsh" ~/.config/zsh
+source ~/.zshrc
 ```
 
-**Why symlinks?** When you update files in the dotfiles repo, the symlinks automatically point to the updated files. No need to manually copy changes. The setup script uses absolute paths so symlinks work correctly regardless of where you run it from.
+## 🎨 Themes
 
-### Zsh Configuration
+| Theme | Description |
+|-------|-------------|
+| `anysphere` | Dark theme inspired by Cursor IDE *(default)* |
+| `catppuccin` | Soothing pastel theme |
+| `nord` | Arctic, bluish colors |
+| `nordic` | Enhanced Nord variant |
+| `onedark` | Atom One Dark colors |
 
-Ensure your `~/.zshrc` sources the config:
+### Change Theme
 
 ```bash
-source ~/.config/zsh/.zshrc
+theme anysphere  # or: catppuccin, nord, nordic, onedark
 ```
 
-### Setting Your Theme
+Or edit `~/.config/zsh/.zshenv`:
+```bash
+export THEME="anysphere"
+```
 
-Edit `~/.config/zsh/.zshenv`:
+## 📁 Structure
+
+```
+dotfiles/
+├── install.sh          # Install dependencies
+├── setup.sh            # Setup symlinks
+├── Brewfile            # Homebrew packages
+│
+├── nvim/               # Neovim config
+│   ├── init.lua
+│   └── lua/
+│       ├── core/       # Options, keymaps
+│       └── plugins/    # Plugin configs
+│           └── themes/ # Theme configs
+│
+├── wezterm/            # WezTerm terminal
+│   ├── .wezterm.lua
+│   ├── config.lua
+│   └── events.lua
+│
+├── kitty/              # Kitty terminal
+│   ├── kitty.conf
+│   └── *.conf          # Theme configs
+│
+├── starship/           # Starship prompt
+│   └── starship.toml
+│
+└── zsh/                # Zsh shell
+    ├── .zshrc
+    ├── .zshenv
+    ├── aliases.zsh
+    └── custom.zsh
+```
+
+## ⌨️ Key Bindings
+
+### Neovim
+
+| Key | Action |
+|-----|--------|
+| `Space` | Leader key |
+| `<leader>e` | Toggle file explorer |
+| `<leader>ff` | Find files |
+| `<leader>fg` | Live grep |
+| `<leader>fb` | Find buffers |
+| `<leader>gg` | Open Lazygit |
+| `\\` | Reveal current file |
+
+### Terminal
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+h/j/k/l` | Navigate splits |
+| `Cmd+Shift+R` | Reload WezTerm config |
+
+## 🔧 Configuration
+
+### Font
+
+All configs use **Geist Mono Nerd Font**:
+
+- WezTerm: `config.lua`
+- Kitty: `custom.conf`
+- Neovim: Inherits from terminal
+
+### Git Blame (GitLens-style)
+
+Shows in status bar: `Author at 08 Jan 2026 • commit message...`
+
+Configure in `nvim/lua/plugins/misc.lua`:
+```lua
+vim.g.gitblame_max_commit_summary_length = 20
+```
+
+## 📦 What Gets Installed
+
+### Essential
+- git, zsh, neovim, starship
+
+### Terminal Tools
+- fzf, zoxide, eza, bat, fd, ripgrep
+- delta, lazygit, htop, tree, jq, tldr
+
+### Development (--dev)
+- node, python, go, rust, lua
+
+### Apps (--apps)
+- WezTerm, VS Code, Arc, Raycast
+- Discord, Slack, Notion, Spotify
+- Docker, Postman, TablePlus
+
+### Fonts (--fonts)
+- JetBrains Mono Nerd Font
+- Geist Mono Nerd Font
+- Fira Code Nerd Font
+- Hack Nerd Font
+
+## 🔄 Updating
 
 ```bash
-export THEME="catppuccin"  # or nord, onedark, anysphere
+cd ~/dotfiles
+git pull
 ```
 
-**After changing the theme:**
+Symlinks automatically point to updated files!
 
-1. **WezTerm:** Press `Cmd+Shift+R` or run `wezterm cli reload-config`
-2. **Kitty:** Theme applies automatically (or restart Kitty)
-3. **Neovim:** Open a new window (reads theme on startup)
-4. **Starship:** Inherits terminal colors automatically
+## 📝 License
 
-## File Locations
-
-| Tool | Config Location | Notes |
-|------|----------------|-------|
-| WezTerm | `~/.wezterm.lua`, `~/config.lua`, `~/events.lua` | Must be in home directory |
-| Kitty | `~/.config/kitty/` | Standard XDG directory |
-| Neovim | `~/.config/nvim/` | Standard XDG directory |
-| Starship | `~/.config/starship.toml` | Standard XDG directory |
-| Zsh | `~/.config/zsh/` | Standard XDG directory |
-
-## Git Tracking
-
-**Important:** The files in `~/.config/dotfiles/` are actual files (not symlinks), so Git can track them properly. The symlinks are created FROM the config locations TO the dotfiles repo, which allows:
-- Git to track the actual files in the repo
-- Config locations to automatically use updated files from the repo
-- No manual copying needed when updating dotfiles
+MIT

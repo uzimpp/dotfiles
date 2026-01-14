@@ -60,6 +60,7 @@ ESSENTIAL=(
 # Terminal & Shell enhancements
 TERMINAL=(
     "wezterm"
+    "tmux"
     "fzf"
     "zoxide"
     "eza"

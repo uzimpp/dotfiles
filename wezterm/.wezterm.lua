@@ -1,5 +1,4 @@
 local wezterm = require("wezterm")
-
 -- Add home directory to Lua package path so we can require config.lua and events.lua
 local home = os.getenv("HOME")
 package.path = package.path .. ";" .. home .. "/?.lua"
@@ -7,40 +6,40 @@ package.path = package.path .. ";" .. home .. "/?.lua"
 local config = require("config")
 require("events")
 
--- Actual Anysphere colors from the plugin (anysphere.nvim)
--- Matches kitty/anysphere.conf for consistency
+-- VSCode Anysphere colors (matches nvim/lua/plugins/themes/anysphere.lua)
 local anysphere_colors = {
-	foreground = "#d6d6dd",
-	background = "#181818",
-	cursor_bg = "#eeeeee", -- matches kitty config
-	cursor_fg = "#181818",
-	cursor_border = "#eeeeee",
-	selection_fg = "#d6d6dd",
-	selection_bg = "#163761",
+	foreground = "#D8DEE9",  -- editor_fg
+	background = "#141414",  -- editor_bg
+	cursor_bg = "#D8DEE9",
+	cursor_fg = "#1a1a1a",
+	cursor_border = "#D8DEE9",
+	selection_fg = "#D8DEE9",
+	selection_bg = "#3a3a3a",  -- selection (blended)
 	ansi = {
-		"#4b5261", -- black (darkgray)
-		"#f75f5f", -- red
-		"#98c379", -- green
-		"#ebc88d", -- yellow
-		"#61afef", -- blue (aqua)
-		"#e394dc", -- magenta
-		"#83d6c5", -- cyan
-		"#b3b3b3", -- white (gray)
+		"#2A2A2A", -- black (gray1)
+		"#BF616A", -- red (red1)
+		"#A3BE8C", -- green (green1)
+		"#EBCB8B", -- yellow (yellow1)
+		"#81A1C1", -- blue (blue1)
+		"#B48EAD", -- magenta (purple1)
+		"#88C0D0", -- cyan (blue2)
+		"#CCCCCC", -- white (ui_fg)
 	},
 	brights = {
-		"#5b5b5b", -- bright black (gray2)
-		"#f75f5f", -- bright red
-		"#98c379", -- bright green
-		"#ebc88d", -- bright yellow
-		"#94c1fa", -- bright blue (softblue)
-		"#e394dc", -- bright magenta
-		"#83d6c5", -- bright cyan
-		"#eeeeee", -- bright white
+		"#505050", -- bright black (gray3)
+		"#BF616A", -- bright red
+		"#a8cc7c", -- bright green (green2)
+		"#EBCB8B", -- bright yellow
+		"#87c3ff", -- bright blue (blue3)
+		"#e394dc", -- bright magenta (pink)
+		"#88C0D0", -- bright cyan
+		"#E5E5E5", -- bright white (sidebar_fg)
 	},
 	tab_bar = {
-		background = "#181818",
-		active_tab = { bg_color = "#26292f", fg_color = "#d6d6dd" },
-		inactive_tab = { bg_color = "#181818", fg_color = "#9ca3b2" },
+		background = "#141414",  -- ui_bg
+		active_tab = { bg_color = "#2A2A2A", fg_color = "#D8DEE9" },
+		inactive_tab = { bg_color = "#141414", fg_color = "#999999" },
+		new_tab = { bg_color = "#141414", fg_color = "#505050" },
 	},
 }
 
@@ -80,78 +79,6 @@ local onedark_colors = {
 	},
 }
 
--- Nord colors (standard Nord palette)
-local nord_colors = {
-	foreground = "#D8DEE9",
-	background = "#2E3440",
-	cursor_bg = "#D8DEE9",
-	cursor_fg = "#2E3440",
-	cursor_border = "#D8DEE9",
-	selection_fg = "#D8DEE9",
-	selection_bg = "#434C5E",
-	ansi = {
-		"#3B4252", -- black
-		"#BF616A", -- red
-		"#A3BE8C", -- green
-		"#EBCB8B", -- yellow
-		"#5E81AC", -- blue
-		"#B48EAD", -- magenta
-		"#88C0D0", -- cyan
-		"#E5E9F0", -- white
-	},
-	brights = {
-		"#4C566A", -- bright black
-		"#BF616A", -- bright red
-		"#A3BE8C", -- bright green
-		"#EBCB8B", -- bright yellow
-		"#81A1C1", -- bright blue
-		"#B48EAD", -- bright magenta
-		"#8FBCBB", -- bright cyan
-		"#ECEFF4", -- bright white
-	},
-	tab_bar = {
-		background = "#2E3440",
-		active_tab = { bg_color = "#5E81AC", fg_color = "#2E3440" },
-		inactive_tab = { bg_color = "#3B4252", fg_color = "#D8DEE9" },
-	},
-}
-
--- Nordic colors (warmer and darker than Nord, with more Aurora prominence)
--- Based on AlexvZyl/nordic.nvim palette and kitty/nordic.conf
-local nordic_colors = {
-	foreground = "#D8DEE9",
-	background = "#2E3440", -- darker base than standard Nord
-	cursor_bg = "#88C0D0",
-	cursor_fg = "#2E3440",
-	cursor_border = "#88C0D0",
-	selection_fg = "#D8DEE9",
-	selection_bg = "#434C5E",
-	ansi = {
-		"#3B4252", -- black
-		"#BF616A", -- red
-		"#A3BE8C", -- green
-		"#EBCB8B", -- yellow
-		"#5E81AC", -- blue
-		"#B48EAD", -- magenta
-		"#8FBCBB", -- cyan (Aurora - more prominent in Nordic)
-		"#ECEFF4", -- white
-	},
-	brights = {
-		"#4C566A", -- bright black
-		"#BF616A", -- bright red
-		"#A3BE8C", -- bright green
-		"#EBCB8B", -- bright yellow
-		"#81A1C1", -- bright blue
-		"#B48EAD", -- bright magenta
-		"#8FBCBB", -- bright cyan (Aurora)
-		"#ECEFF4", -- bright white
-	},
-	tab_bar = {
-		background = "#2E3440",
-		active_tab = { bg_color = "#5E81AC", fg_color = "#2E3440" },
-		inactive_tab = { bg_color = "#3B4252", fg_color = "#D8DEE9" },
-	},
-}
 
 -- Get theme from .zshenv file
 local function get_theme()
@@ -194,13 +121,7 @@ elseif theme == "onedark" then
 	-- Use custom onedark colors (built-in scheme may not exist)
 	config.colors = onedark_colors
 	wezterm.log_info("Applied OneDark custom colors")
-elseif theme == "nordic" then
-	config.colors = nordic_colors
-	wezterm.log_info("Applied Nordic custom colors")
-elseif theme == "nord" then
-	-- Use custom nord colors (built-in scheme may not exist)
-	config.colors = nord_colors
-	wezterm.log_info("Applied Nord custom colors")
+
 else
 	-- Default to anysphere
 	config.colors = anysphere_colors

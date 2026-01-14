@@ -27,7 +27,7 @@ return {
       symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' },
       colored = true,
       update_in_insert = true,
-      always_visible = false,
+      always_visible = true,
       cond = hide_in_width,
     }
 
@@ -50,67 +50,24 @@ return {
       end,
     }
 
-    -- Custom anysphere lualine theme
-    -- Colors from wezterm anysphere config
-    local colors = {
-      bg = '#181818',
-      bg_alt = '#26292f',
-      fg = '#d6d6dd',
-      fg_dim = '#9ca3b2',
-      blue = '#61afef',
-      green = '#98c379',
-      magenta = '#e394dc',
-      red = '#f75f5f',
-      yellow = '#ebc88d',
-      cyan = '#83d6c5',
-    }
-
-    local anysphere_theme = {
-      normal = {
-        a = { bg = colors.blue, fg = colors.bg, gui = 'bold' },
-        b = { bg = colors.bg_alt, fg = colors.blue },      -- mode color text
-        c = { bg = colors.bg, fg = colors.fg_dim },        -- muted text
-      },
-      insert = {
-        a = { bg = colors.green, fg = colors.bg, gui = 'bold' },
-        b = { bg = colors.bg_alt, fg = colors.green },     -- mode color text
-        c = { bg = colors.bg, fg = colors.fg_dim },        -- muted text
-      },
-      visual = {
-        a = { bg = colors.magenta, fg = colors.bg, gui = 'bold' },
-        b = { bg = colors.bg_alt, fg = colors.magenta },   -- mode color text
-        c = { bg = colors.bg, fg = colors.fg_dim },        -- muted text
-      },
-      replace = {
-        a = { bg = colors.red, fg = colors.bg, gui = 'bold' },
-        b = { bg = colors.bg_alt, fg = colors.red },       -- mode color text
-        c = { bg = colors.bg, fg = colors.fg_dim },        -- muted text
-      },
-      command = {
-        a = { bg = colors.yellow, fg = colors.bg, gui = 'bold' },
-        b = { bg = colors.bg_alt, fg = colors.yellow },    -- mode color text
-        c = { bg = colors.bg, fg = colors.fg_dim },        -- muted text
-      },
-      inactive = {
-        a = { bg = colors.bg, fg = colors.fg_dim },
-        b = { bg = colors.bg, fg = colors.fg_dim },
-        c = { bg = colors.bg, fg = colors.fg_dim },
-      },
-    }
-
-    -- Get lualine theme
+    -- Get lualine theme (anysphere theme is set by themes/anysphere.lua)
     local function get_lualine_theme()
       local theme = vim.g.theme or os.getenv('THEME') or 'anysphere'
-      if theme == 'anysphere' then
-        return anysphere_theme
+      
+      -- Use theme-provided lualine config if available
+      if theme == 'anysphere' and vim.g.anysphere_lualine then
+        return vim.g.anysphere_lualine
       end
+      
+      -- Fallback to built-in lualine themes
       local lualine_theme_map = {
         nordic = 'nordic',
         nord = 'nord',
         onedark = 'onedark',
         catppuccin = 'catppuccin',
+        anysphere = 'auto',  -- fallback if theme didn't set it
       }
-      return lualine_theme_map[theme] or anysphere_theme
+      return lualine_theme_map[theme] or 'auto'
     end
 
     require('lualine').setup({
@@ -127,8 +84,8 @@ return {
       },
       sections = {
         lualine_a = { mode },
-        lualine_b = { 'branch', diff, diagnostics },
-        lualine_c = { filename },
+        lualine_b = { 'branch', diff},
+        lualine_c = { filename, diagnostics },
         lualine_x = { git_blame , { 'filetype', cond = hide_in_width } },
         lualine_y = { 'progress' },
         lualine_z = { 'location' },

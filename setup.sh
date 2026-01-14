@@ -165,6 +165,14 @@ main() {
     [ -f "$DOTFILES_DIR/wezterm/events.lua" ] && \
         create_symlink "$DOTFILES_DIR/wezterm/events.lua" "$HOME/events.lua"
 
+    # Tmux
+    print_header "Tmux"
+    if [ -f "$DOTFILES_DIR/tmux/tmux.conf" ]; then
+        create_symlink "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
+    else
+        print_info "Skipped (no config found)"
+    fi
+
     # Kitty
     print_header "Kitty"
     if [ -d "$DOTFILES_DIR/kitty" ]; then

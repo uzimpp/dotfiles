@@ -6,6 +6,22 @@ return {
     require('persistence').setup({
       options = { 'buffers', 'curdir', 'tabpages', 'winsize', 'help', 'globals', 'skiprtp' },
     })
+
+    -- Close Neo-tree before saving session to avoid restoring broken buffers
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'PersistenceSavePre',
+      callback = function()
+        vim.cmd('silent! Neotree close')
+      end,
+    })
+
+    -- Close Neo-tree after loading session to cleanup any bad buffers from old sessions
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'PersistenceLoadPost',
+      callback = function()
+        vim.cmd('silent! Neotree close')
+      end,
+    })
     
     -- Keymaps
     vim.keymap.set('n', '<leader>qs', function()

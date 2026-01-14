@@ -19,11 +19,11 @@ function readjust_font_size(window, pane)
   local initial_font_size = 12.5 -- Set to your desired font size
   config_overrides.font_size = initial_font_size
 
-  local max_iterations = 5
+  local max_iterations = 6
   local iteration_count = 0
-  local tolerance = 3
+  local tolerance = 5
 
-  -- Calculate the initial difference between window and pane heights
+-- Calculate the initial difference between window and pane heights
   local current_diff = window_dims.pixel_height - pane_dims.pixel_height
   local min_diff = math.abs(current_diff)
   local best_font_size = initial_font_size

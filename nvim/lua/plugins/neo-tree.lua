@@ -3,9 +3,10 @@ return {
   branch = 'v3.x',
   cmd = 'Neotree',  -- Load on command, not at startup
   keys = {
-    { '<leader>e', '<cmd>Neotree toggle<CR>', desc = 'Toggle Explorer' },
-    { '<leader>w', '<cmd>Neotree float<CR>', desc = 'Float Explorer' },
-    { '\\', '<cmd>Neotree reveal<CR>', desc = 'Reveal in Explorer' },
+    { '<leader>w', ':Neotree toggle float<CR>', silent = true, desc = 'Float File Explorer' },
+    { '<leader>e', ':Neotree toggle position=left<CR>', silent = true, desc = 'Left File Explorer' },
+    { '<leader>ngs', ':Neotree float git_status<CR>', silent = true, desc = 'Neotree Open Git Status Window' },
+    { '\\', ':Neotree reveal<CR>', silent = true, desc = 'Reveal in Explorer' },
   },
   dependencies = {
     'nvim-lua/plenary.nvim',
@@ -45,7 +46,7 @@ return {
       enable_diagnostics = true,
       -- enable_normal_mode_for_inputs = false,                             -- Enable normal mode for input dialogs.
       open_files_do_not_replace_types = { 'terminal', 'trouble', 'qf' }, -- when opening files, do not use windows containing these filetypes or buftypes
-      sort_case_insensitive = false, -- used when sorting files and directories in the tree
+      sort_case_insensitive = true, -- used when sorting files and directories in the tree
       sort_function = nil, -- use a custom function for sorting files and directories in the tree
       -- sort_function = function (a,b)
       --       if a.type == b.type then
@@ -64,8 +65,8 @@ return {
           -- indent guides
           with_markers = true,
           indent_marker = '│',
-          last_indent_marker = '│',
-          -- last_indent_marker = '└',
+          -- last_indent_marker = '│',
+          last_indent_marker = '└',
 
           highlight = 'NeoTreeIndentMarker',
           -- expander config, needed for nesting files

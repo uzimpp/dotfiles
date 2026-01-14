@@ -12,14 +12,29 @@ config.adjust_window_size_when_changing_font_size = false
 config.window_decorations = "RESIZE"
 config.check_for_updates = false
 config.use_fancy_tab_bar = false
-config.tab_bar_at_bottom = false
+config.tab_bar_at_bottom = true
+-- Font Configuration
+config.font = wezterm.font("JetBrainsMono Nerd Font", { weight = "Regular" })
 config.font_size = 12.5
-config.font = wezterm.font("GeistMono Nerd Font Mono", { weight = "Regular" })
-config.enable_tab_bar = false
+
+-- Disable WezTerm's custom block glyphs to use font's shade characters (fixes ASCII art)
+config.custom_block_glyphs = false
+
+-- Line height (1.0 = default, 1.2 = 20% more space between lines)
+-- Using 1.0 to prevent bottom padding issues - extra line spacing causes window/grid mismatch
+config.line_height = 1.2
+
+-- -- Letter spacing (cell width multiplier, 1.0 = default)
+config.cell_width = 1.0
+
+-- Disable ligatures if you prefer (uncomment to disable)
+-- config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }
+
+config.enable_tab_bar = true
 config.window_padding = {
-	left = 7,
+	left = 0,
 	right = 0,
-	top = 2,
+	top = 4,
 	bottom = 0,
 }
 -- config.background = {
@@ -49,9 +64,31 @@ config.window_padding = {
 -- }
 -- config.window_background_opacity = 0.3
 -- config.macos_window_background_blur = 20
+-- Key bindings
 config.keys = {
+	-- Custom Enter key mappings
 	{ key = "Enter", mods = "CTRL", action = wezterm.action({ SendString = "\x1b[13;5u" }) },
 	{ key = "Enter", mods = "SHIFT", action = wezterm.action({ SendString = "\x1b[13;2u" }) },
+	
+	-- Split panes (useful for running commands while coding)
+	{ key = "|", mods = "CTRL|SHIFT", action = wezterm.action({ SplitHorizontal = { domain = "CurrentPaneDomain" } }) },
+	{ key = "-", mods = "CTRL|SHIFT", action = wezterm.action({ SplitVertical = { domain = "CurrentPaneDomain" } }) },
+	
+	-- Navigate between panes
+	{ key = "h", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Left" }) },
+	{ key = "l", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Right" }) },
+	{ key = "k", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Up" }) },
+	{ key = "j", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Down" }) },
+	
+	-- Close pane
+	{ key = "x", mods = "CTRL|SHIFT", action = wezterm.action({ CloseCurrentPane = { confirm = false } }) },
+	
+	-- New tab
+	{ key = "t", mods = "CTRL|SHIFT", action = wezterm.action({ SpawnTab = "CurrentPaneDomain" }) },
+	
+	-- Navigate tabs
+	{ key = "[", mods = "CTRL|SHIFT", action = wezterm.action({ ActivateTabRelative = -1 }) },
+	{ key = "]", mods = "CTRL|SHIFT", action = wezterm.action({ ActivateTabRelative = 1 }) },
 }
 -- from: https://akos.ma/blog/adopting-wezterm/
 config.hyperlink_rules = {
