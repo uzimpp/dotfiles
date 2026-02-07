@@ -82,10 +82,18 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 (( ${+ZSH_HIGHLIGHT_STYLES} )) || typeset -A ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_STYLES[path]=none
 ZSH_HIGHLIGHT_STYLES[path_prefix]=none
-# Change colors
-# export ZSH_HIGHLIGHT_STYLES[suffix-alias]=fg=blue
-# export ZSH_HIGHLIGHT_STYLES[precommand]=fg=blue
-# export ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
+# Style for wrong commands (red)
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
+ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=red'
+# Style for correct commands (normal foreground / white)
+ZSH_HIGHLIGHT_STYLES[command]='fg=white'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=white'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=white'
+ZSH_HIGHLIGHT_STYLES[function]='fg=white'
+ZSH_HIGHLIGHT_STYLES[precommand]='fg=white'
+ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=white'
+ZSH_HIGHLIGHT_STYLES[hashed-command]='fg=white'
+ZSH_HIGHLIGHT_STYLES[arg0]='fg=white'
 
 # Activate autosuggestions
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh

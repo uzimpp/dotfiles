@@ -17,7 +17,7 @@ return {
     }
 
     local hide_in_width = function()
-      return vim.fn.winwidth(0) > 100
+      return vim.fn.winwidth(0) > 20
     end
 
     local diagnostics = {
@@ -84,7 +84,7 @@ return {
       },
       sections = {
         lualine_a = { mode },
-        lualine_b = { 'branch', diff},
+        lualine_b = { 'branch', diff },
         lualine_c = { filename, diagnostics },
         lualine_x = { git_blame , { 'filetype', cond = hide_in_width } },
         lualine_y = { 'progress' },

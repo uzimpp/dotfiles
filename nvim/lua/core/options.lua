@@ -24,7 +24,7 @@ vim.opt.listchars = {
   extends = '›',   -- Line extends beyond right
   precedes = '‹',  -- Line extends beyond left
   nbsp = '␣',      -- Non-breaking space
-  space = '·',   -- Uncomment to show all spaces
+  -- space = '·',   -- Uncomment to show all spaces
 }
 vim.o.whichwrap = 'bs<>[]hl' -- which "horizontal" keys are allowed to travel to prev/next line
 vim.o.wrap = false -- display lines as one long line
@@ -58,7 +58,6 @@ vim.opt.iskeyword:append '-' -- hyphenated words recognized by searches
 vim.opt.formatoptions:remove { 'c', 'r', 'o' } -- don't insert the current comment leader automatically for auto-wrapping comments using 'textwidth', hitting <Enter> in insert mode, or hitting 'o' or 'O' in normal mode.
 vim.opt.runtimepath:remove '/usr/share/vim/vimfiles' -- separate vim plugins from neovim in case vim still in use
 
--- Auto-save: save file when leaving insert mode or when text changes
 vim.api.nvim_create_autocmd({ 'InsertLeave', 'TextChanged' }, {
   pattern = '*',
   callback = function()

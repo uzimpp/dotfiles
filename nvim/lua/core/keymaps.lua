@@ -137,6 +137,41 @@ vim.keymap.set('n', '<leader>?', '<cmd>edit ~/.config/nvim/CHEATSHEET.md<CR>', {
 -- Command mode shortcut
 vim.keymap.set('n', ';', ':', { noremap = true })
 
+-- Comment this if using bufferline instead
+-- Buffer navigation keymaps
+local opts = { noremap = true, silent = true }
+
+-- Cycle through buffers
+vim.keymap.set('n', '<Tab>', '<cmd>bnext<CR>', { desc = 'Next buffer' })
+vim.keymap.set('n', '<S-Tab>', '<cmd>bprev<CR>', { desc = 'Prev buffer' })
+
+-- Function to switch to numbered buffer in "visual" order (listed buffers)
+local function switch_to_buffer(n)
+  local buffers = vim.fn.getbufinfo({ buflisted = 1 })
+  if n > #buffers then
+    vim.notify("Buffer " .. n .. " index out of range", vim.log.levels.WARN)
+    return
+  end
+  -- vim.fn.getbufinfo returns list, so we map index n to buffer handle
+  local buf = buffers[n]
+  if buf then
+    vim.api.nvim_set_current_buf(buf.bufnr)
+  end
+end
+
+-- Jump to buffer by index (1-9)
+vim.keymap.set('n', '<leader>1', function() switch_to_buffer(1) end, { desc = 'Buffer 1' })
+vim.keymap.set('n', '<leader>2', function() switch_to_buffer(2) end, { desc = 'Buffer 2' })
+vim.keymap.set('n', '<leader>3', function() switch_to_buffer(3) end, { desc = 'Buffer 3' })
+vim.keymap.set('n', '<leader>4', function() switch_to_buffer(4) end, { desc = 'Buffer 4' })
+vim.keymap.set('n', '<leader>5', function() switch_to_buffer(5) end, { desc = 'Buffer 5' })
+vim.keymap.set('n', '<leader>6', function() switch_to_buffer(6) end, { desc = 'Buffer 6' })
+vim.keymap.set('n', '<leader>7', function() switch_to_buffer(7) end, { desc = 'Buffer 7' })
+vim.keymap.set('n', '<leader>8', function() switch_to_buffer(8) end, { desc = 'Buffer 8' })
+vim.keymap.set('n', '<leader>9', function() switch_to_buffer(9) end, { desc = 'Buffer 9' })
+
+-- Note: Native buffers cannot be "moved" arbitrarily like tabs or bufferline.
+
 --------------------------------------------------------------------------------
 -- INSERT MODE
 --------------------------------------------------------------------------------

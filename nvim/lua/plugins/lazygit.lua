@@ -1,5 +1,7 @@
 return {
   'kdheepak/lazygit.nvim',
+  lazy = false,
+  priority = 1000,
   cmd = {
     'LazyGit',
     'LazyGitConfig',

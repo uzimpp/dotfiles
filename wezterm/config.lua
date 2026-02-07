@@ -15,10 +15,10 @@ config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = true
 -- Font Configuration
 config.font = wezterm.font("JetBrainsMono Nerd Font", { weight = "Regular" })
-config.font_size = 12.5
+config.font_size = 13
 
 -- Disable WezTerm's custom block glyphs to use font's shade characters (fixes ASCII art)
-config.custom_block_glyphs = false
+config.custom_block_glyphs = true
 
 -- Line height (1.0 = default, 1.2 = 20% more space between lines)
 -- Using 1.0 to prevent bottom padding issues - extra line spacing causes window/grid mismatch

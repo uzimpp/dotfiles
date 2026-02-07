@@ -32,6 +32,7 @@ require('lazy').setup({
   require 'plugins.alpha',
   require 'plugins.lualine',
   -- require 'plugins.bufferline',
+  require 'plugins.formatting',
   require 'plugins.rainbow',
   require 'plugins.neo-tree',
   require 'plugins.oil',

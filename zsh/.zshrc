@@ -9,3 +9,6 @@ setopt HIST_IGNORE_ALL_DUPS
 
 # Work
 [ -f "$HOME/.config/zsh/work.zsh" ] && source "$HOME/.config/zsh/work.zsh"
+true
+true
+true
