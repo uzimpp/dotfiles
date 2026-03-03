@@ -9,20 +9,20 @@ config.default_cursor_style = "SteadyBar"
 config.automatically_reload_config = true
 config.window_close_confirmation = "NeverPrompt"
 config.adjust_window_size_when_changing_font_size = false
-config.window_decorations = "RESIZE"
-config.check_for_updates = false
+-- config.window_decorations = "TITLE"
+config.check_for_updates = true
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = true
 -- Font Configuration
 config.font = wezterm.font("JetBrainsMono Nerd Font", { weight = "Regular" })
-config.font_size = 13
+config.font_size = 17
 
 -- Disable WezTerm's custom block glyphs to use font's shade characters (fixes ASCII art)
 config.custom_block_glyphs = true
 
 -- Line height (1.0 = default, 1.2 = 20% more space between lines)
 -- Using 1.0 to prevent bottom padding issues - extra line spacing causes window/grid mismatch
-config.line_height = 1.2
+config.line_height = 1.0
 
 -- -- Letter spacing (cell width multiplier, 1.0 = default)
 config.cell_width = 1.0
