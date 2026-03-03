@@ -197,6 +197,22 @@ main() {
     print_header "Zsh"
     create_symlink "$DOTFILES_DIR/zsh" "$HOME/.config/zsh"
 
+    # Download git-completion.bash if missing (required by custom.zsh)
+    GIT_COMPLETION="$DOTFILES_DIR/zsh/git-completion.bash"
+    if [ ! -f "$GIT_COMPLETION" ]; then
+        if [ "$DRY_RUN" = true ]; then
+            print_step "[DRY RUN] Would download git-completion.bash"
+        else
+            print_step "Downloading git-completion.bash..."
+            curl -fsSo "$GIT_COMPLETION" \
+                https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash \
+                && print_success "git-completion.bash downloaded" \
+                || print_warning "Failed to download git-completion.bash"
+        fi
+    else
+        print_success "git-completion.bash (already present)"
+    fi
+
     # Setup shell config files (APPEND only, never overwrite existing content)
     print_header "Shell Configuration"
     if [ "$DRY_RUN" = false ]; then
