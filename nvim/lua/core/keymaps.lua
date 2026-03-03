@@ -131,9 +131,6 @@ vim.keymap.set('n', '<leader>dD', 'yyP', { desc = 'Duplicate line up' })
 -- Open file under cursor in vertical split
 vim.keymap.set('n', 'gf', '<C-w>vgf', { desc = 'Open file under cursor in vsplit' })
 
--- Open cheatsheet
-vim.keymap.set('n', '<leader>?', '<cmd>edit ~/.config/nvim/CHEATSHEET.md<CR>', { desc = 'Open Cheatsheet' })
-
 -- Command mode shortcut
 vim.keymap.set('n', ';', ':', { noremap = true })
 
