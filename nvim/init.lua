@@ -45,6 +45,7 @@ require('lazy').setup({
   require 'plugins.dap',
   require 'plugins.trouble',
   require 'plugins.session',
+  require 'plugins.which-key',
 }, {
   defaults = {
     lazy = true,

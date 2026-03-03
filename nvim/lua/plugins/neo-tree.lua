@@ -12,7 +12,7 @@ return {
     'nvim-lua/plenary.nvim',
     'nvim-tree/nvim-web-devicons',
     'MunifTanjim/nui.nvim',
-    '3rd/image.nvim', -- Optional image support in preview window: See `# Preview Mode` for more information
+    { '3rd/image.nvim', optional = true }, -- Optional image support in preview window
     {
       's1n7ax/nvim-window-picker',
       version = '2.*',
@@ -76,8 +76,8 @@ return {
           expander_highlight = 'NeoTreeExpander',
         },
         icon = {
-          folder_closed = '',
-          folder_open = '',
+          folder_closed = '',
+          folder_open = '',
           folder_empty = '󰜌',
           -- The next two settings are only a fallback, if you use nvim-web-devicons and configure default icons there
           -- then these will never be used.
@@ -126,7 +126,8 @@ return {
           required_width = 110, -- min width of window required to show this column
         },
         symlink_target = {
-          enabled = false,
+          enabled = true,
+          required_width = 64, -- min width of window required to show this column
         },
       },
       -- A list of functions, each representing a global custom command
@@ -196,7 +197,7 @@ return {
       nesting_rules = {},
       filesystem = {
         filtered_items = {
-          visible = false, -- when true, they will just be displayed differently than normal items
+          visible = true, -- when true, they will just be displayed differently than normal items
           hide_dotfiles = false,
           hide_gitignored = false,
           hide_hidden = false, -- only works on Windows for hidden files/directories

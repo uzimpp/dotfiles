@@ -179,22 +179,28 @@ return {
     hl(0, 'AlphaFooter', { fg = c.gray4, bg = c.ui_bg })
     
     -- Neo-tree
-    hl(0, 'NeoTreeNormal', { bg = c.ui_bg, fg = c.sidebar_fg })
-    hl(0, 'NeoTreeNormalNC', { bg = c.ui_bg, fg = c.sidebar_fg })
+    hl(0, 'NeoTreeNormal', { bg = c.ui_bg, fg = c.comment })
+    hl(0, 'NeoTreeNormalNC', { bg = c.ui_bg, fg = c.comment })
     hl(0, 'NeoTreeEndOfBuffer', { bg = c.ui_bg, fg = c.ui_bg })
     hl(0, 'NeoTreeCursorLine', { bg = c.active_selection })
     hl(0, 'NeoTreeWinSeparator', { fg = c.ui_bg, bg = c.ui_bg })
     hl(0, 'NeoTreeIndentMarker', { fg = c.indent_guide })
-    hl(0, 'NeoTreeFileName', { fg = c.sidebar_fg })
-    hl(0, 'NeoTreeDirectoryName', { fg = c.sidebar_fg })
-    hl(0, 'NeoTreeDirectoryIcon', { fg = c.blue1 })
-    hl(0, 'NeoTreeRootName', { fg = c.sidebar_fg, bold = true })
+    hl(0, 'NeoTreeFileName', { fg = c.comment })
+    hl(0, 'NeoTreeDirectoryName', { fg = c.comment })
+    hl(0, 'NeoTreeDirectoryIcon', { fg = c.comment })
+    hl(0, 'NeoTreeRootName', { fg = c.comment, bold = true })
     hl(0, 'NeoTreeFloatBorder', { bg = c.ui_bg, fg = c.gray2 })
-    hl(0, 'NeoTreeFloatTitle', { bg = c.ui_bg, fg = c.sidebar_fg })
+    hl(0, 'NeoTreeFloatTitle', { bg = c.ui_bg, fg = c.comment })
     hl(0, 'NeoTreeGitAdded', { fg = c.green1 })
     hl(0, 'NeoTreeGitModified', { fg = c.yellow1 })
     hl(0, 'NeoTreeGitDeleted', { fg = c.red1 })
     hl(0, 'NeoTreeGitUntracked', { fg = c.green2 })
+    -- Hidden / filtered items (visible = true shows these dimmed)
+    hl(0, 'NeoTreeDimText',     { fg = c.gray2 })           -- general dim text
+    hl(0, 'NeoTreeDotfile',     { fg = c.gray2, italic = true }) -- dotfiles
+    hl(0, 'NeoTreeHiddenByName',{ fg = c.gray2, italic = true }) -- hide_by_name items
+    hl(0, 'NeoTreeGitIgnored',  { fg = c.gray2, italic = true }) -- git ignored
+    hl(0, 'NeoTreeIgnored',     { fg = c.gray2, italic = true }) -- .neotreeignore
     
     -- Indent guides
     hl(0, 'IblIndent', { fg = c.gray2 })
@@ -248,9 +254,9 @@ return {
         c = { bg = c.ui_bg, fg = c.ui_fg_dim },
       },
       inactive = {
-        a = { bg = c.ui_bg, fg = c.ui_fg_dim },
-        b = { bg = c.ui_bg, fg = c.ui_fg_dim },
-        c = { bg = c.ui_bg, fg = c.ui_fg_dim },
+        a = { bg = c.editor_bg, fg = c.editor_bg },
+        b = { bg = c.editor_bg, fg = c.editor_bg },
+        c = { bg = c.editor_bg, fg = c.editor_bg },
       },
     }
   end,

@@ -61,7 +61,7 @@ return {
       dashboard.button('q', '󰿅  Quit', '<cmd>qa<CR>'),
     }
 
-    dashboard.section.footer.val = {"uzimp",""}
+    dashboard.section.footer.val = {'"Skill issue", uzimp',""}
 
     -- Set up alpha
     alpha.setup(dashboard.opts)
