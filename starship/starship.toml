@@ -1,18 +1,17 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-$os\
+ $os\
 []() \
 $username\
 [|](fg:color_bright_black) \
 $directory\
-[|](fg:color_bright_black) \
 $git_branch\
 $git_status\
 $line_break\
 $character"""
 
-right_format = """$time"""
+right_format = """$python $time"""
 
 palette = 'anysphere'
 
@@ -84,7 +83,7 @@ truncation_symbol = ".../"
 [git_branch]
 symbol = ""
 style = "bold fg:color_orange"
-format = '[$symbol $branch ]($style)'
+format = '[|](fg:color_bright_black) [$symbol $branch ]($style)'
 
 [git_status]
 style = "bold fg:color_orange"
@@ -137,8 +136,8 @@ format = '[$symbol( $version) ]($style)'
 
 [python]
 symbol = ""
-style = "bold fg:color_blue"
-format = '[$symbol( $version) ]($style)'
+style = "bold fg:color_magenta"
+format = '[$symbol $virtualenv ](bold fg:color_magenta)'
 
 [docker_context]
 symbol = ""
@@ -166,9 +165,9 @@ disabled = false
 
 [character]
 disabled = false
-success_symbol = '[>](bold fg:color_green)'
-error_symbol = '[>](bold fg:color_red)'
-vimcmd_symbol = '[<](bold fg:color_green)'
-vimcmd_replace_one_symbol = '[<](bold fg:color_purple)'
-vimcmd_replace_symbol = '[<](bold fg:color_purple)'
-vimcmd_visual_symbol = '[<](bold fg:color_yellow)'
+success_symbol = '[ >](bold fg:color_green)'
+error_symbol = '[ >](bold fg:color_red)'
+vimcmd_symbol = '[ <](bold fg:color_green)'
+vimcmd_replace_one_symbol = '[ <](bold fg:color_purple)'
+vimcmd_replace_symbol = '[ <](bold fg:color_purple)'
+vimcmd_visual_symbol = '[ <](bold fg:color_yellow)'
