@@ -7,24 +7,24 @@ vim.hl.priorities.semantic_tokens = 95 -- Or any number lower than 100, treesitt
 -- Appearance of diagnostics
 vim.diagnostic.config {
   virtual_text = {
-    prefix = '●',
+    prefix = ' ●',
     -- Add a custom format function to show error codes
     format = function(diagnostic)
       local code = diagnostic.code and string.format('[%s]', diagnostic.code) or ''
       return string.format('%s %s', code, diagnostic.message)
     end,
   },
-  underline = false,
+  underline = true,
   update_in_insert = true,
   float = {
     source = true, -- Or "if_many"
   },
   signs = {
     text = {
-      [vim.diagnostic.severity.ERROR] = ' ',
-      [vim.diagnostic.severity.WARN] = ' ',
-      [vim.diagnostic.severity.INFO] = ' ',
-      [vim.diagnostic.severity.HINT] = '󰌵 ',
+      [vim.diagnostic.severity.ERROR] = '', --  
+      [vim.diagnostic.severity.WARN] = '', --  
+      [vim.diagnostic.severity.INFO] = '', --  
+      [vim.diagnostic.severity.HINT] = '', -- 󰌵
     },
   },
   -- Make diagnostic background transparent

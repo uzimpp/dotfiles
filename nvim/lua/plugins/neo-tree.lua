@@ -16,6 +16,7 @@ return {
     {
       's1n7ax/nvim-window-picker',
       version = '2.*',
+      lazy = false, -- Load at startup for UI
       config = function()
         require('window-picker').setup {
           filter_rules = {
@@ -40,7 +41,7 @@ return {
   },
   config = function()
     require('neo-tree').setup {
-      close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
+      close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
       popup_border_style = 'rounded',
       enable_git_status = true,
       enable_diagnostics = true,
@@ -210,13 +211,15 @@ return {
             '.git',
             '.python-version',
             '.venv',
+            'venv',
+            'a.out',
           },
           hide_by_pattern = { -- uses glob style patterns
             --"*.meta",
             --"*/src/*/tsconfig.json",
           },
           always_show = { -- remains visible even if other settings would normally hide it
-            --".gitignored",
+            -- ".gitignored",
           },
           never_show = { -- remains hidden even if visible is toggled to true, this overrides always_show
             --".DS_Store",

@@ -18,14 +18,30 @@ vim.opt.fillchars = { eob = ' ' } -- Hide ~ end-of-buffer characters
 
 -- Show whitespace characters like VSCode
 vim.opt.list = true
-vim.opt.listchars = {
-  tab = '→ ',      -- Tab character
-  trail = '·',     -- Trailing spaces
-  extends = '›',   -- Line extends beyond right
-  precedes = '‹',  -- Line extends beyond left
-  nbsp = '␣',      -- Non-breaking space
-  -- space = '·',   -- Uncomment to show all spaces
+local listchars_base = {
+  tab = '→ ',
+  trail = '·',
+  extends = '›',
+  precedes = '‹',
+  nbsp = '␣',
 }
+vim.opt.listchars = listchars_base
+
+-- Show space/lead dots in visual mode only
+vim.api.nvim_create_autocmd('ModeChanged', {
+  pattern = '*:[vV\22]*',
+  callback = function()
+    vim.opt.listchars = vim.tbl_extend('force', listchars_base, { space = '·', lead = '·', trail = '·' })
+  end,
+})
+vim.api.nvim_create_autocmd('ModeChanged', {
+  pattern = '[vV\22]*:*',
+  callback = function()
+    vim.opt.listchars = listchars_base
+  end,
+})
+
+
 vim.o.whichwrap = 'bs<>[]hl' -- which "horizontal" keys are allowed to travel to prev/next line
 vim.o.wrap = false -- display lines as one long line
 vim.o.linebreak = true -- companion to wrap don't split words

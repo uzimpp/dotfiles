@@ -1,6 +1,7 @@
 return {
   'nvim-lualine/lualine.nvim',
   lazy = false,
+  priority = 1000,
   dependencies = { 'nvim-tree/nvim-web-devicons' },
   config = function()
     local mode = {
@@ -37,7 +38,7 @@ return {
       symbols = { added = '+', modified = '~', removed = '-' },
       cond = hide_in_width,
     }
-
+    -- TODO
     -- Git blame component using git-blame.nvim (like VS Code GitLens)
     local git_blame = {
       function()
@@ -50,30 +51,10 @@ return {
       end,
     }
 
-    -- Get lualine theme (anysphere theme is set by themes/anysphere.lua)
-    local function get_lualine_theme()
-      local theme = vim.g.theme or os.getenv('THEME') or 'anysphere'
-      
-      -- Use theme-provided lualine config if available
-      if theme == 'anysphere' and vim.g.anysphere_lualine then
-        return vim.g.anysphere_lualine
-      end
-      
-      -- Fallback to built-in lualine themes
-      local lualine_theme_map = {
-        nordic = 'nordic',
-        nord = 'nord',
-        onedark = 'onedark',
-        catppuccin = 'catppuccin',
-        anysphere = 'auto',  -- fallback if theme didn't set it
-      }
-      return lualine_theme_map[theme] or 'auto'
-    end
-
     require('lualine').setup({
       options = {
         icons_enabled = true,
-        theme = get_lualine_theme(),
+        theme = 'auto',
         -- https://www.nerdfonts.com/cheat-sheet
         --             ▓▒░ ░▒▓
         component_separators = { left = "", right = "" },
