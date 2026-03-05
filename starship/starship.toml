@@ -33,6 +33,43 @@ color_bright_blue = '#87c3ff'
 color_bright_magenta = '#e394dc'
 color_bright_white = '#E5E5E5'
 
+[palettes.kanagawa]
+color_fg = '#C5C9C5'
+color_bg = '#181616'
+color_black = '#0D0C0C'
+color_red = '#C4746E'
+color_green = '#8A9A7B'
+color_yellow = '#C4B28A'
+color_blue = '#8BA4B0'
+color_orange = '#B6927B'
+color_magenta = '#A292A3'
+color_cyan = '#8EA4A2'
+color_white = '#C8C093'
+color_bright_black = '#A6A69C'
+color_bright_green = '#87A987'
+color_bright_blue = '#7FB4CA'
+color_bright_magenta = '#938AA9'
+color_bright_white = '#C5C9C5'
+
+[palettes.mellifluous]
+# Exact values extracted from raw mellifluous configs
+color_fg = '#dadada'
+color_bg = '#1a1a1a'
+color_black = '#1a1a1a'
+color_red = '#d59192'
+color_green = '#b3b393'
+color_yellow = '#bfaf8e'
+color_blue = '#a8a1be'
+color_orange = '#cbaa88'      # Keyword/accent color
+color_magenta = '#b99bb5'
+color_cyan = '#a8a1be'
+color_white = '#5b5b5b'
+color_bright_black = '#242424'
+color_bright_green = '#dfdfbe'
+color_bright_blue = '#d4cdeb'
+color_bright_magenta = '#e6c6e1'
+color_bright_white = '#aeaeae'
+
 [os]
 disabled = false
 style = "bold fg:color_cyan"
@@ -64,7 +101,7 @@ Pop = ""
 [username]
 show_always = true
 style_user = "bold fg:color_cyan"
-style_root = "bold fg:color_blue"
+style_root = "bold fg:color_cyan"
 format = '[$user ]($style)'
 
 [directory]
@@ -168,6 +205,6 @@ disabled = false
 success_symbol = '[ >](bold fg:color_green)'
 error_symbol = '[ >](bold fg:color_red)'
 vimcmd_symbol = '[ <](bold fg:color_green)'
-vimcmd_replace_one_symbol = '[ <](bold fg:color_purple)'
-vimcmd_replace_symbol = '[ <](bold fg:color_purple)'
+vimcmd_replace_one_symbol = '[ <](bold fg:color_magenta)'
+vimcmd_replace_symbol = '[ <](bold fg:color_magenta)'
 vimcmd_visual_symbol = '[ <](bold fg:color_yellow)'

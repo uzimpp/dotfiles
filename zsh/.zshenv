@@ -10,7 +10,7 @@ export XDG_DATA_HOME="$HOME/.local/share"      # Application data
 export XDG_STATE_HOME="$HOME/.local/state"     # Logs and state files
 
 # Unified Theme System
-# Set this to: nord, onedark, nordic, catppuccin, or anysphere
+# Set this to: onedark, catppuccin, anysphere, tokyonight, mellifluous, or kanagawa
 # Changing this will update all tools: neovim, starship, wezterm
 export THEME="anysphere"
 

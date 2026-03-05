@@ -65,6 +65,8 @@ return {
           python = true,                            -- Python language support
           typescript = true,                        -- TypeScript language support
           javascript = true,                        -- JavaScript language support
+          lua = true,                               -- Lua language support
+          go = true,                                -- Go language support
         },
       },
       
@@ -89,7 +91,7 @@ return {
         indent_blankline = true,
         dashboard = true,
         which_key = true,
-        trouble = false,
+        trouble = true,
         todo_comments = true,
         lazy = true,
         mini = true,
@@ -124,8 +126,7 @@ return {
       minimap_bg = '#181818',
       editor_fg = '#D8DEE9',
       ui_fg = '#CCCCCC',
-      ui_fg_dim = '#999999',
-      comment = '#7a7a7a',           -- #FFFFFF5C blended
+      ui_fg_dim = '#7a7a7a',           -- #FFFFFF5C blended
       gray1 = '#2A2A2A',
       gray2 = '#404040',
       gray3 = '#505050',
@@ -150,7 +151,7 @@ return {
     hl(0, 'Normal', { bg = c.editor_bg, fg = c.editor_fg })
     hl(0, 'NormalNC', { bg = c.editor_bg, fg = c.editor_fg })
     hl(0, 'CursorLine', { bg = c.gray1 })
-    hl(0, 'CursorLineNr', { fg = c.sidebar_fg, bold = true })
+    hl(0, 'CursorLineNr', { fg = c.sidebar_fg, bold = true, italic = true })
     hl(0, 'LineNr', { fg = c.gray4 })
     hl(0, 'Visual', { bg = c.selection })
     hl(0, 'Search', { bg = '#4d6680', fg = c.editor_fg })
@@ -158,7 +159,7 @@ return {
     
     -- Floating windows
     hl(0, 'NormalFloat', { bg = c.ui_bg, fg = c.editor_fg })
-    hl(0, 'FloatBorder', { bg = c.ui_bg, fg = c.gray2 })
+    hl(0, 'FloatBorder', { bg = c.ui_bg, fg = c.gray1 })
     hl(0, 'FloatTitle', { bg = c.ui_bg, fg = c.editor_fg, bold = true })
     
     -- Popup menus
@@ -179,18 +180,18 @@ return {
     hl(0, 'AlphaFooter', { fg = c.gray4, bg = c.ui_bg })
     
     -- Neo-tree
-    hl(0, 'NeoTreeNormal', { bg = c.ui_bg, fg = c.comment })
-    hl(0, 'NeoTreeNormalNC', { bg = c.ui_bg, fg = c.comment })
+    hl(0, 'NeoTreeNormal', { bg = c.ui_bg, fg = c.ui_fg_dim })
+    hl(0, 'NeoTreeNormalNC', { bg = c.ui_bg, fg = c.ui_fg_dim })
     hl(0, 'NeoTreeEndOfBuffer', { bg = c.ui_bg, fg = c.ui_bg })
     hl(0, 'NeoTreeCursorLine', { bg = c.active_selection })
     hl(0, 'NeoTreeWinSeparator', { fg = c.ui_bg, bg = c.ui_bg })
     hl(0, 'NeoTreeIndentMarker', { fg = c.indent_guide })
-    hl(0, 'NeoTreeFileName', { fg = c.comment })
-    hl(0, 'NeoTreeDirectoryName', { fg = c.comment })
-    hl(0, 'NeoTreeDirectoryIcon', { fg = c.comment })
-    hl(0, 'NeoTreeRootName', { fg = c.comment, bold = true })
-    hl(0, 'NeoTreeFloatBorder', { bg = c.ui_bg, fg = c.gray2 })
-    hl(0, 'NeoTreeFloatTitle', { bg = c.ui_bg, fg = c.comment })
+    hl(0, 'NeoTreeFileName', { fg = c.ui_fg_dim })
+    hl(0, 'NeoTreeDirectoryName', { fg = c.ui_fg_dim })
+    hl(0, 'NeoTreeDirectoryIcon', { fg = c.ui_fg_dim })
+    hl(0, 'NeoTreeRootName', { fg = c.ui_fg_dim, bold = true })
+    hl(0, 'NeoTreeFloatBorder', { bg = c.ui_bg, fg = c.gray1 })
+    hl(0, 'NeoTreeFloatTitle', { bg = c.ui_bg, fg = c.ui_fg_dim })
     hl(0, 'NeoTreeGitAdded', { fg = c.green1 })
     hl(0, 'NeoTreeGitModified', { fg = c.yellow1 })
     hl(0, 'NeoTreeGitDeleted', { fg = c.red1 })
@@ -201,11 +202,34 @@ return {
     hl(0, 'NeoTreeHiddenByName',{ fg = c.gray2, italic = true }) -- hide_by_name items
     hl(0, 'NeoTreeGitIgnored',  { fg = c.gray2, italic = true }) -- git ignored
     hl(0, 'NeoTreeIgnored',     { fg = c.gray2, italic = true }) -- .neotreeignore
-    
+
+
+    -- ── Telescope
+    hl(0, "TelescopeNormal", { bg = c.ui_bg, fg = c.ui_fg_dim })
+    hl(0, "TelescopeBorder", { bg = c.ui_bg, fg = c.gray1 })
+
+    hl(0, "TelescopePromptNormal", { bg = c.ui_bg, fg = c.fg })
+    hl(0, "TelescopePromptBorder", { bg = c.ui_bg, fg = c.gray1 })
+    hl(0, "TelescopePromptTitle", { bg = c.ui_bg, fg = c.ui_fg })
+  
+    hl(0, "TelescopeResultsNormal", { bg = c.ui_bg, fg = c.ui_fg })
+    hl(0, "TelescopeResultsBorder", { bg = c.ui_bg, fg = c.gray1 })
+    hl(0, "TelescopeResultsTitle", { bg = c.ui_bg, fg = c.ui_fg })
+
+    hl(0, "TelescopePreviewNormal", { bg = c.editor_bg })
+    hl(0, "TelescopePreviewBorder", { bg = c.ui_bg, fg = c.gray1 })
+    hl(0, "TelescopePreviewTitle", { bg = c.ui_bg, fg = c.ui_fg })
+    hl(0, "TelescopePreviewMatch", { bg = c.active_selection, fg = c.blue3, bold = true })
+    hl(0, "TelescopePreviewLine", { bg = c.active_selection })
+
+    hl(0, "TelescopeSelection", { bg = c.active_selection })
+    hl(0, "TelescopeSelectionCaret", { fg = c.ui_bg })
+    hl(0, "TelescopeMatching", { fg = c.blue3, bold = true })
+
     -- Indent guides
     hl(0, 'IblIndent', { fg = c.gray2 })
-    hl(0, 'IblScope', { fg = c.gray4 })
-    
+    hl(0, 'IblScope', { fg = c.indent_guide })
+
     -- Statusline
     hl(0, 'StatusLine', { bg = c.ui_bg, fg = c.ui_fg_dim })
     hl(0, 'StatusLineNC', { bg = c.ui_bg, fg = c.gray4 })
@@ -220,45 +244,51 @@ return {
     hl(0, 'RainbowDelimiterRed',    { fg = c.red1 })
 
     -- Bufferline Integration
-    -- Use editor_bg (#1a1a1a) instead of ui_bg (#141414) to match the editor
     hl(0, 'BufferLineFill', { bg = c.ui_bg })
-    hl(0, 'BufferLineBackground', { bg = c.ui_bg, fg = c.ui_fg })
-    hl(0, 'BufferLineSeparator', { fg = c.ui_bg, bg = c.ui_bg })
+    hl(0, 'BufferLineBackground', { bg = c.ui_bg, fg = c.ui_fg_dim })
+    hl(0, 'BufferLineSeparator', { bg = c.ui_bg, fg = c.ui_bg})
     hl(0, 'BufferLineBufferSelected', { bg = c.editor_bg, fg = c.editor_fg, bold = true })
 
-    -- Expose lualine theme globally for lualine.lua to use
-    vim.g.anysphere_lualine = {
-      normal = {
-        a = { bg = c.blue1, fg = c.ui_bg, gui = 'bold' },
-        b = { bg = c.gray1, fg = c.blue1 },
-        c = { bg = c.ui_bg, fg = c.ui_fg_dim },
-      },
-      insert = {
-        a = { bg = c.green1, fg = c.ui_bg, gui = 'bold' },
-        b = { bg = c.gray1, fg = c.green1 },
-        c = { bg = c.ui_bg, fg = c.ui_fg_dim },
-      },
-      visual = {
-        a = { bg = c.pink, fg = c.ui_bg, gui = 'bold' },
-        b = { bg = c.gray1, fg = c.pink },
-        c = { bg = c.ui_bg, fg = c.ui_fg_dim },
-      },
-      replace = {
-        a = { bg = c.red1, fg = c.ui_bg, gui = 'bold' },
-        b = { bg = c.gray1, fg = c.red1 },
-        c = { bg = c.ui_bg, fg = c.ui_fg_dim },
-      },
-      command = {
-        a = { bg = c.yellow1, fg = c.ui_bg, gui = 'bold' },
-        b = { bg = c.gray1, fg = c.yellow1 },
-        c = { bg = c.ui_bg, fg = c.ui_fg_dim },
-      },
-      inactive = {
-        a = { bg = c.editor_bg, fg = c.editor_bg },
-        b = { bg = c.editor_bg, fg = c.editor_bg },
-        c = { bg = c.editor_bg, fg = c.editor_bg },
-      },
-    }
+    -- Lualine highlight (deferred so lualine is guaranteed loaded, same as mellifluous)
+    vim.schedule(function()
+      local lualine_theme = {
+        normal = {
+          a = { bg = c.blue1, fg = c.ui_bg, gui = 'bold' },
+          b = { bg = c.gray1, fg = c.blue1 },
+          c = { bg = c.ui_bg, fg = c.ui_fg_dim }
+        },
+        insert = {
+          a = { bg = c.green1, fg = c.ui_bg, gui = 'bold' },
+          b = { bg = c.gray1, fg = c.green1 },
+          c = { bg = c.ui_bg, fg = c.ui_fg_dim }
+        },
+        visual = {
+          a = { bg = c.pink, fg = c.ui_bg, gui = 'bold' },
+          b = { bg = c.gray1, fg = c.pink },
+          c = { bg = c.ui_bg, fg = c.ui_fg_dim }
+        },
+        replace = {
+          a = { bg = c.red1, fg = c.ui_bg, gui = 'bold' },
+          b = { bg = c.gray1, fg = c.red1 },
+          c = { bg = c.ui_bg, fg = c.ui_fg_dim }
+        },
+        command = {
+          a = { bg = c.yellow1, fg = c.ui_bg, gui = 'bold' },
+          b = { bg = c.gray1, fg = c.yellow1 },
+          c = { bg = c.ui_bg, fg = c.ui_fg_dim }
+        },
+        inactive = {
+          a = { bg = c.ui_bg, fg = c.ui_bg },
+          b = { bg = c.ui_bg, fg = c.ui_bg },
+          c = { bg = c.ui_bg, fg = c.ui_bg }
+        }
+      }
+
+      package.loaded['lualine.themes.cursor-dark-anysphere'] = lualine_theme
+      if package.loaded['lualine'] then
+        require('lualine').setup({ options = { theme = lualine_theme } })
+      end
+    end)
   end,
 }
 

@@ -9,18 +9,22 @@ M.theme_modules = {
   catppuccin = 'plugins.themes.catppuccin',
   anysphere = 'plugins.themes.anysphere',
   tokyonight = 'plugins.themes.tokyonight',
+  mellifluous = 'plugins.themes.mellifluous',
+  kanagawa = 'plugins.themes.kanagawa',
 }
 
 -- Theme to colorscheme command mapping
-M.colorschemes = {
+M.colorschemes = { -- Set this to: onedark, catppuccin, anysphere, tokyonight, mellifluous, or kanagawa
   onedark = 'onedark',
   catppuccin = 'catppuccin',
   anysphere = 'cursor-dark-anysphere',
   tokyonight = 'tokyonight',
+  mellifluous = 'mellifluous',
+  kanagawa = 'kanagawa',
 }
 
 -- Default theme if none is set
-M.default_theme = 'catppuccin'
+M.default_theme = 'mellifluous'
 
 -- Get current theme from environment variable or .zshenv file
 function M.get_theme()

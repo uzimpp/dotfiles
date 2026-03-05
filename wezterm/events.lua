@@ -1,10 +1,10 @@
 local wezterm = require("wezterm")
 local mux = wezterm.mux
 
-wezterm.on("gui-startup", function()
-  local _, _, window = mux.spawn_window({})
-  window:gui_window():maximize()
-end)
+-- wezterm.on("gui-startup", function()
+--   local _, _, window = mux.spawn_window({})
+--   window:gui_window():maximize()
+-- end)
 
 -- wezterm.on("window-resized", function(window, pane)
 -- 	readjust_font_size(window, pane)
@@ -16,7 +16,7 @@ function readjust_font_size(window, pane)
   local pane_dims = pane:get_dimensions()
 
   local config_overrides = {}
-  local initial_font_size = 12.5 -- Set to your desired font size
+  local initial_font_size = 17 -- Set to your desired font size
   config_overrides.font_size = initial_font_size
 
   local max_iterations = 6
