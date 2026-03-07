@@ -22,7 +22,7 @@ return {
     { 'ahmedkhalf/project.nvim' },
 
     -- Useful for getting pretty icons, but requires a Nerd Font.
-    { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+    { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
   },
   config = function()
     -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -53,8 +53,8 @@ return {
         mappings = {
           i = {
             ['<C-k>'] = require('telescope.actions').move_selection_previous, -- move to prev result
-            ['<C-j>'] = require('telescope.actions').move_selection_next, -- move to next result
-            ['<C-l>'] = require('telescope.actions').select_default, -- open file
+            ['<C-j>'] = require('telescope.actions').move_selection_next,     -- move to next result
+            ['<C-l>'] = require('telescope.actions').select_default,          -- open file
           },
         },
       },
@@ -80,7 +80,7 @@ return {
     -- Enable Telescope extensions if they are installed
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'ui-select')
-    
+
     -- Project.nvim setup (uses fd if available, falls back to find)
     require('project_nvim').setup {
       detection_methods = { 'pattern', 'lsp' },
@@ -90,7 +90,7 @@ return {
     pcall(require('telescope').load_extension, 'projects')
 
     local builtin = require 'telescope.builtin'
-    
+
     -- ═══════════════════════════════════════════════════════════════════════
     -- PRIMARY (single key - most used actions)
     -- ═══════════════════════════════════════════════════════════════════════
@@ -104,7 +104,7 @@ return {
         winblend = 0, previewer = false,
       })
     end, { desc = 'Search in buffer' })
-    
+
     -- ═══════════════════════════════════════════════════════════════════════
     -- SEARCH PREFIX (s + key - less frequent but useful)
     -- ═══════════════════════════════════════════════════════════════════════

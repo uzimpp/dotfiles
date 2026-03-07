@@ -172,6 +172,3 @@ git pull
 
 Symlinks automatically point to updated files!
 
-## 📝 License
-
-MIT

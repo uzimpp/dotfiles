@@ -43,4 +43,3 @@ return {
     end, { desc = 'Harpoon: Next mark' })
   end,
 }
-

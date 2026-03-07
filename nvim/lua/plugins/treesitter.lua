@@ -1,50 +1,92 @@
 return {
-  'nvim-treesitter/nvim-treesitter',
-  opts = {
-    ensure_installed = {
-      'lua',
-      'python',
-      'javascript',
-      'typescript',
-      'vimdoc',
-      'vim',
-      'regex',
-      'terraform',
-      'sql',
-      'dockerfile',
-      'toml',
-      'json',
-      'java',
-      'groovy',
-      'go',
-      'gitignore',
-      'graphql',
-      'yaml',
-      'make',
-      'cmake',
-      'markdown',
-      'markdown_inline',
-      'bash',
-      'tsx',
-      'vue',
-      'svelte',
-      'rust',
-      'css',
-      'html',
-    },
-    -- Autoinstall languages that are not installed
-    auto_install = true,
-    highlight = {
-      enable = true,
-      additional_vim_regex_highlighting = false,
-    },
-    indent = {
-      enable = true,
-      disable = { 'ruby' },
-    },
-    -- Enable folding with treesitter
-    folding = {
-      enable = true,
-    },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    event = { "BufReadPre", "BufNewFile" },
+    build = ":TSUpdate",
+    config = function()
+      -- import nvim-treesitter plugin
+      local treesitter = require("nvim-treesitter")
+
+      -- configure treesitter
+      treesitter.setup({       -- enable syntax highlighting
+        highlight = {
+          enable = true,
+          -- Use regex highlighting for markdown so headings, links, etc. are highlighted
+          additional_vim_regex_highlighting = { "markdown" },
+        },
+        -- enable indentation
+        indent = { enable = true },
+
+        -- ensure these languages parsers are installed
+        ensure_installed = {
+          "json",
+          "javascript",
+          "typescript",
+          "tsx",
+          "go",
+          "yaml",
+          "html",
+          "css",
+          "python",
+          "http",
+          "prisma",
+          "markdown",
+          "markdown_inline",
+          "svelte",
+          "graphql",
+          "bash",
+          "lua",
+          "vim",
+          "dockerfile",
+          "gitignore",
+          "query",
+          "vimdoc",
+          "c",
+          "java",
+          "rust",
+          "ron",
+        },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "<C-space>",
+            node_incremental = "<C-space>",
+            -- scope_incremental = false,
+            node_decremental = "<C-backspace>",
+          },
+        },
+      })
+      -- force start treesitter for all filetypes
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = '*',
+        callback = function()
+          pcall(vim.treesitter.start)
+        end,
+      })
+    end,
+  },
+  -- NOTE: js,ts,jsx,tsx Auto Close Tags
+  {
+    "windwp/nvim-ts-autotag",
+    enabled = true,
+    ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" },
+    config = function()
+      -- Independent nvim-ts-autotag setup
+      require("nvim-ts-autotag").setup({
+        opts = {
+          enable_close = true,                     -- Auto-close tags
+          enable_rename = true,                    -- Auto-rename pairs
+          enable_close_on_slash = false,           -- Disable auto-close on trailing `</`
+        },
+        per_filetype = {
+          ["html"] = {
+            enable_close = true,             -- Disable auto-closing for HTML
+          },
+          ["typescriptreact"] = {
+            enable_close = true,             -- Explicitly enable auto-closing (optional, defaults to `true`)
+          },
+        },
+      })
+    end,
   },
 }

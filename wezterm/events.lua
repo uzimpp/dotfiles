@@ -43,7 +43,7 @@ function readjust_font_size(window, pane)
       )
     )
 
-    -- Increment the font size slightly
+    -- Increment the font 
     config_overrides.font_size = config_overrides.font_size + 0.5
     window:set_config_overrides(config_overrides)
 

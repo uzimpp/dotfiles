@@ -172,7 +172,7 @@ return { -- Autocompletion
         end,
       },
     }
-    
+
     -- Setup cmdline completion for Noice
     cmp.setup.cmdline({ '/', '?' }, {
       mapping = cmp.mapping.preset.cmdline(),
@@ -180,7 +180,7 @@ return { -- Autocompletion
         { name = 'buffer' },
       },
     })
-    
+
     cmp.setup.cmdline(':', {
       mapping = cmp.mapping.preset.cmdline(),
       sources = cmp.config.sources({

@@ -7,6 +7,8 @@ setopt HIST_IGNORE_ALL_DUPS
 # Aliases
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
 
+export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+
 # Work
 [ -f "$HOME/.config/zsh/work.zsh" ] && source "$HOME/.config/zsh/work.zsh"
 true
