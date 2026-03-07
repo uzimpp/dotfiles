@@ -1,5 +1,5 @@
-require 'core.options' -- Load general options
-require 'core.keymaps' -- Load general keymaps
+require 'core.options'  -- Load general options
+require 'core.keymaps'  -- Load general keymaps
 require 'core.snippets' -- Custom code snippets
 
 -- Load theme configuration
@@ -31,12 +31,16 @@ require('lazy').setup({
   require 'plugins.ui',
   require 'plugins.alpha',
   require 'plugins.lualine',
+  require 'plugins.gitblame',
+  require 'plugins.oklch-color-picker',
   require 'plugins.bufferline',
   require 'plugins.formatting',
   require 'plugins.rainbow',
   require 'plugins.neo-tree',
   require 'plugins.oil',
   require 'plugins.indent-blankline',
+  require 'plugins.smear-cursor',
+  require 'plugins.markdown-preview',
   require 'plugins.lazygit',
   require 'plugins.comment',
   require 'plugins.gitsigns',
