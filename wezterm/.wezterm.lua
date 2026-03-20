@@ -81,38 +81,38 @@ local onedark_colors = {
 
 -- Mellifluous colors — exact values computed from colorsets/mellifluous.lua (neutral=true)
 local mellifluous_colors = {
-	foreground    = "#dadada",  -- @text, @variable, etc from config
-	background    = "#1a1a1a",  -- Normal bg from config
-	cursor_bg     = "#cbaa88",  -- Cursor bg from config
-	cursor_fg     = "#1a1a1a",  -- Cursor fg from config
-	cursor_border = "#cbaa88",
-	selection_fg  = "#dadada",
+	foreground    = "#cccccc",  -- @text, @variable, etc from config
+	background    = "#141414",  -- Normal bg from config
+	cursor_bg     = "#cccccc",  -- Cursor bg from config
+	cursor_fg     = "#141414",  -- Cursor fg from config
+	cursor_border = "#cccccc",
+	selection_fg  = "#454545",
 	selection_bg  = "#2d2d2d",  -- Visual bg from config
 	ansi = {
-		"#1a1a1a",  -- 0 black
+		"#2d2d2d",  -- 0 black
 		"#d59192",  -- 1 red
-		"#b3b393",  -- 2 green
-		"#bfaf8e",  -- 3 yellow
-		"#a8a1be",  -- 4 blue
-		"#b99bb5",  -- 5 magenta
-		"#a8a1be",  -- 6 cyan
-		"#dadada",  -- 7 white
+		"#97b393",  -- 2 green
+		"#bfb68e",  -- 3 yellow
+		"#a1a5be",  -- 4 blue
+		"#b99bb3",  -- 5 magenta
+		"#a1b0be",  -- 6 cyan
+		"#cccccc",  -- 7 white
 	},
 	brights = {
-		"#242424",  -- 8 bright black
-		"#ffbcbd",  -- 9 bright red
-		"#dfdfbe",  -- 10 bright green
-		"#ecdbb9",  -- 11 bright yellow
-		"#d4cdeb",  -- 12 bright blue
-		"#e6c6e1",  -- 13 bright magenta
-		"#d4cdeb",  -- 14 bright cyan
-		"#dadada",  -- 15 bright white
+		"#4d4d4d",  -- 0 black
+		"#d59192",  -- 1 red
+		"#97b393",  -- 2 green
+		"#bfb68e",  -- 3 yellow
+		"#a1a5be",  -- 4 blue
+		"#b99bb3",  -- 5 magenta
+		"#a1b0be",  -- 6 cyan
+		"#cccccc",  -- 7 white
 	},
 	tab_bar = {
-		background   = "#161616",  -- dark_bg = bg-2.5%L
-		active_tab   = { bg_color = "#282828", fg_color = "#dedede" },
-		inactive_tab = { bg_color = "#161616", fg_color = "#636363" },
-		new_tab      = { bg_color = "#161616", fg_color = "#282828" },
+		background   = "#141414",  -- dark_bg = bg-2.5%L
+		active_tab   = { bg_color = "#1a1a1a", fg_color = "#AEAEAE" },
+		inactive_tab = { bg_color = "#141414", fg_color = "#636363" },
+		new_tab      = { bg_color = "#141414", fg_color = "#282828" },
 	},
 }
 

@@ -127,6 +127,8 @@ return {
           },
         },
       },
+      phpactor = {},
+      ruby_ls = {},
     }
 
     -- Ensure all tools are installed via Mason

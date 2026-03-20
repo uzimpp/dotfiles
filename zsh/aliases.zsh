@@ -82,3 +82,9 @@ alias ls="eza --all --icons=always"
 
 # Lazygit
 alias lg="lazygit"
+
+# bun
+export PATH="$HOME/.bun/bin:$PATH"
+
+# java
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"

@@ -12,11 +12,10 @@ config.adjust_window_size_when_changing_font_size = false
 -- config.window_decorations = "TITLE"
 config.check_for_updates = true
 config.use_fancy_tab_bar = false
-config.tab_bar_at_bottom = true
+config.tab_bar_at_bottom = false
 -- Font Configuration
-config.font = wezterm.font("JetBrainsMono Nerd Font", { weight = "Regular" })
-config.font_size = 17
-
+config.font = wezterm.font("GeistMono Nerd Font", { weight = "Regular" })
+config.font_size = 18
 -- Disable WezTerm's custom block glyphs to use font's shade characters (fixes ASCII art)
 config.custom_block_glyphs = true
 
@@ -32,8 +31,8 @@ config.cell_width = 1.0
 
 config.enable_tab_bar = true
 config.window_padding = {
-	left = 0,
-	right = 0,
+	left = 4,
+	right = 4,
 	top = 0,
 	bottom = 0,
 }

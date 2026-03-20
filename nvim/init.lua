@@ -33,7 +33,7 @@ require('lazy').setup({
   require 'plugins.lualine',
   require 'plugins.gitblame',
   require 'plugins.oklch-color-picker',
-  require 'plugins.bufferline',
+  -- require 'plugins.bufferline',
   require 'plugins.formatting',
   require 'plugins.rainbow',
   require 'plugins.neo-tree',

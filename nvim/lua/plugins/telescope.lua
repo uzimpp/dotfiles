@@ -50,6 +50,11 @@ return {
       -- You can put your default mappings / updates / etc. in here
       --  All the info you're looking for is in `:help telescope.setup()`
       defaults = {
+        sorting_strategy = 'ascending',  -- First result at bottom
+        layout_strategy = 'flex',
+        layout_config = {
+            prompt_position = 'top',  -- This moves prompt to top
+        },
         mappings = {
           i = {
             ['<C-k>'] = require('telescope.actions').move_selection_previous, -- move to prev result

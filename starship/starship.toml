@@ -4,75 +4,23 @@ format = """
  $os\
 []() \
 $username\
-[|](fg:color_bright_black) \
+[|](bright-black) \
 $directory\
 $git_branch\
 $git_status\
+$fill\
+$python \
+$time\
 $line_break\
 $character"""
+[fill]
+symbol = " "
+style = "black"
 
-right_format = """$python $time"""
-
-palette = 'anysphere'
-
-[palettes.anysphere]
-color_fg = '#D8DEE9'
-color_bg = '#141414'
-color_black = '#2A2A2A'
-color_red = '#BF616A'
-color_green = '#a8cc7c'
-color_yellow = '#EBCB8B'
-color_blue = '#87c3ff'
-color_orange = '#EFB080'
-color_magenta = '#e394dc'
-color_cyan = '#88C0D0'
-color_white = '#CCCCCC'
-color_bright_black = '#505050'
-color_bright_green = '#a8cc7c'
-color_bright_blue = '#87c3ff'
-color_bright_magenta = '#e394dc'
-color_bright_white = '#E5E5E5'
-
-[palettes.kanagawa]
-color_fg = '#C5C9C5'
-color_bg = '#181616'
-color_black = '#0D0C0C'
-color_red = '#C4746E'
-color_green = '#8A9A7B'
-color_yellow = '#C4B28A'
-color_blue = '#8BA4B0'
-color_orange = '#B6927B'
-color_magenta = '#A292A3'
-color_cyan = '#8EA4A2'
-color_white = '#C8C093'
-color_bright_black = '#A6A69C'
-color_bright_green = '#87A987'
-color_bright_blue = '#7FB4CA'
-color_bright_magenta = '#938AA9'
-color_bright_white = '#C5C9C5'
-
-[palettes.mellifluous]
-# Exact values extracted from raw mellifluous configs
-color_fg = '#dadada'
-color_bg = '#1a1a1a'
-color_black = '#1a1a1a'
-color_red = '#d59192'
-color_green = '#b3b393'
-color_yellow = '#bfaf8e'
-color_blue = '#a8a1be'
-color_orange = '#cbaa88'      # Keyword/accent color
-color_magenta = '#b99bb5'
-color_cyan = '#a8a1be'
-color_white = '#5b5b5b'
-color_bright_black = '#242424'
-color_bright_green = '#dfdfbe'
-color_bright_blue = '#d4cdeb'
-color_bright_magenta = '#e6c6e1'
-color_bright_white = '#aeaeae'
 
 [os]
 disabled = false
-style = "bold fg:color_cyan"
+style = "cyan"
 
 [os.symbols]
 Windows = "󰍲"
@@ -100,111 +48,104 @@ Pop = ""
 
 [username]
 show_always = true
-style_user = "bold fg:color_cyan"
-style_root = "bold fg:color_cyan"
+style_user = "cyan"
+style_root = "cyan bold"
 format = '[$user ]($style)'
 
 [directory]
-style = "bold fg:color_yellow"
+style = "blue"
 format = "[$path ]($style)"
 truncation_length = 3
 truncation_symbol = ".../"
 
-[directory.substitutions]
-"Documents" = "󰈙"
-"Downloads" = ""
-"Music" = "󰝚"
-"Pictures" = ""
-"Developer" = "󰲋"
-
 [git_branch]
 symbol = ""
-style = "bold fg:color_orange"
-format = '[|](fg:color_bright_black) [$symbol $branch ]($style)'
+style = "purple"
+format = '[|](bright-black) [$symbol $branch ]($style)'
 
 [git_status]
-style = "bold fg:color_orange"
+style = "purple"
 format = '[$all_status$ahead_behind ]($style)'
 
 [nodejs]
 symbol = ""
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [c]
 symbol = " "
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [cpp]
 symbol = " "
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [rust]
 symbol = ""
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [golang]
 symbol = ""
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [php]
 symbol = ""
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [java]
 symbol = ""
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [kotlin]
 symbol = ""
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [haskell]
 symbol = ""
-style = "bold fg:color_blue"
+style = "blue"
 format = '[$symbol( $version) ]($style)'
 
 [python]
 symbol = ""
-style = "bold fg:color_magenta"
-format = '[$symbol $virtualenv ](bold fg:color_magenta)'
+style = "yellow"
+format = '[$symbol $virtualenv ](yellow)'
 
 [docker_context]
 symbol = ""
-style = "dimmed fg:color_bright_black"
+style = "dimmed bright-black"
 format = '[$symbol( $context) ]($style)'
 
 [conda]
 symbol = ""
-style = "dimmed fg:color_bright_black"
+style = "dimmed bright-black"
 format = '[$symbol( $environment) ]($style)'
 
 [pixi]
 symbol = "P "
-style = "dimmed fg:color_bright_black"
+style = "dimmed bright-black"
 format = '[$symbol( $version)( $environment) ]($style)'
 
 [time]
 disabled = false
 time_format = "%R"
-style = "fg:color_bright_black"
-format = '[$time]($style)'
+style = "bright-black"
+format = '[$time]($style) '
 
 [line_break]
 disabled = false
 
 [character]
 disabled = false
-success_symbol = '[ >](bold fg:color_green)'
-error_symbol = '[ >](bold fg:color_red)'
-vimcmd_symbol = '[ <](bold fg:color_green)'
-vimcmd_replace_one_symbol = '[ <](bold fg:color_magenta)'
-vimcmd_replace_symbol = '[ <](bold fg:color_magenta)'
-vimcmd_visual_symbol = '[ <](bold fg:color_yellow)'
+success_symbol = '[ >](green)'
+error_symbol = '[ >](red)'
+vimcmd_symbol = '[ <](green)'
+vimcmd_replace_one_symbol = '[ <](purple)'
+vimcmd_replace_symbol = '[ <](purple)'
+vimcmd_visual_symbol = '[ <](yellow)'

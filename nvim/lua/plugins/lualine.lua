@@ -25,7 +25,7 @@ return {
       'diagnostics',
       sources = { 'nvim_diagnostic' },
       sections = { 'error', 'warn' },
-      symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' },
+      symbols = { error = ' ', warn = ' ', info = ' ', hint = '󰌵 ' },
       colored = true,
       update_in_insert = true,
       always_visible = true,
@@ -58,7 +58,7 @@ return {
         -- https://www.nerdfonts.com/cheat-sheet
         --             ▓▒░ ░▒▓
         component_separators = { left = "", right = "" },
-        section_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
         disabled_filetypes = { 'alpha' },
         globalstatus = true,
         always_divide_middle = true,
@@ -67,7 +67,7 @@ return {
         lualine_a = { mode },
         lualine_b = { 'branch', diff },
         lualine_c = { filename, diagnostics },
-        lualine_x = { git_blame, { 'filetype', cond = hide_in_width } },
+        lualine_x = { git_blame  },
         lualine_y = { 'progress' },
         lualine_z = { 'location' },
       },

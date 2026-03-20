@@ -12,7 +12,7 @@ export XDG_STATE_HOME="$HOME/.local/state"     # Logs and state files
 # Unified Theme System
 # Set this to: onedark, catppuccin, anysphere, tokyonight, mellifluous, or kanagawa
 # Changing this will update all tools: neovim, starship, wezterm
-export THEME="anysphere"
+export THEME="mellifluous"
 
 # Derive individual theme variables from unified THEME
 export NVIM_THEME="$THEME"
