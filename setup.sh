@@ -181,6 +181,31 @@ main() {
         print_info "Skipped (not found)"
     fi
 
+    # Ghostty
+    print_header "Ghostty"
+    if [ -f "$DOTFILES_DIR/ghostty/config" ]; then
+        create_symlink "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
+    else
+        print_info "Skipped (not found)"
+    fi
+    
+    # Regenerate Ghostty colors based on THEME
+    if [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would regenerate ghostty/colors.inc"
+    else
+        print_step "Regenerating ghostty/colors.inc..."
+        if source "$HOME/.config/zsh/.zshenv" 2>/dev/null; then
+            if source "$HOME/.config/zsh/colors.zsh" 2>/dev/null; then
+                _generate_ghostty_config && print_success "colors.inc regenerated (theme: $THEME)" || \
+                    print_warning "Failed to generate colors.inc"
+            else
+                print_warning "colors.zsh not found"
+            fi
+        else
+            print_warning "Could not source .zshenv"
+        fi
+    fi
+
     # Neovim
     print_header "Neovim"
     create_symlink "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
@@ -257,6 +282,7 @@ main() {
     print_header "Verification"
     local files=(
         "$HOME/.wezterm.lua:WezTerm"
+        "$HOME/.config/ghostty/config:Ghostty"
         "$HOME/.config/nvim/init.lua:Neovim"
         "$HOME/.config/zsh/.zshrc:Zsh"
     )
@@ -296,13 +322,20 @@ main() {
             print_success "Starship will reload with shell"
         fi
         
+        # Reload Ghostty if running
+        if command -v ghostty &>/dev/null && pgrep -x ghostty &>/dev/null; then
+            print_info "Reloading Ghostty..."
+            killall ghostty 2>/dev/null; sleep 0.1
+            open -a ghostty 2>/dev/null && print_success "Ghostty reloaded" || \
+                print_info "Ghostty: restart manually"
+        fi
+        
         # Source the new shell config
         print_info "Sourcing shell configuration..."
         
         echo ""
         echo -e "${BOLD}${GREEN}✓ Setup complete!${NC}"
         echo ""
-        echo -e "  ${CYAN}Theme:${NC} anysphere (change with: ${BOLD}theme <name>${NC})"
         echo -e "  ${CYAN}Themes:${NC} anysphere, catppuccin, nord, nordic, onedark"
         echo ""
         echo -e "${YELLOW}${WARN}${NC} ${BOLD}Run this to apply shell changes:${NC}"

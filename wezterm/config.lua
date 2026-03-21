@@ -9,26 +9,16 @@ config.default_cursor_style = "SteadyBar"
 config.automatically_reload_config = true
 config.window_close_confirmation = "NeverPrompt"
 config.adjust_window_size_when_changing_font_size = false
--- config.window_decorations = "TITLE"
 config.check_for_updates = true
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = false
--- Font Configuration
+-- config.use_resize_increments = true
+
 config.font = wezterm.font("GeistMono Nerd Font", { weight = "Regular" })
-config.font_size = 18
--- Disable WezTerm's custom block glyphs to use font's shade characters (fixes ASCII art)
+config.font_size = 14
 config.custom_block_glyphs = true
-
--- Line height (1.0 = default, 1.2 = 20% more space between lines)
--- Using 1.0 to prevent bottom padding issues - extra line spacing causes window/grid mismatch
-config.line_height = 1.0
-
--- -- Letter spacing (cell width multiplier, 1.0 = default)
 config.cell_width = 1.0
-
--- Disable ligatures if you prefer (uncomment to disable)
--- config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }
-
+config.line_height = 1.1
 config.enable_tab_bar = true
 config.window_padding = {
 	left = 4,
@@ -36,55 +26,36 @@ config.window_padding = {
 	top = 0,
 	bottom = 0,
 }
--- config.background = {
--- 	{
--- 		source = {
--- 			File = "/Users/" .. os.getenv("USER") .. "/.config/wezterm/dark-desert.jpg",
--- 		},
--- 		hsb = {
--- 			hue = 1.0,
--- 			saturation = 1.02,
--- 			brightness = 0.25,
--- 		},
--- 		-- attachment = { Parallax = 0.3 },
--- 		-- width = "100%",
--- 		-- height = "100%",
--- 	},
--- 	{
--- 		source = {
--- 			Color = "#0D1117",
--- 		},
--- 		width = "100%",
--- 		height = "100%",
--- 		-- opacity = 0.55,
--- 		opacity = 0.75,
--- 		-- opacity = 1,
--- 	},
--- }
--- config.window_background_opacity = 0.3
--- config.macos_window_background_blur = 20
+-- Dim inactive panes by reducing their brightness and saturation
+config.inactive_pane_hsb = {
+  hue = 1.0,         -- default value (no change)
+  saturation = 0.9,  -- reduce saturation by 50%
+  brightness = 1.0, -- reduce brightness by 25% (dimming)
+}
+config.hyperlink_rules = wezterm.default_hyperlink_rules()
+
 -- Key bindings
 config.keys = {
 	-- Custom Enter key mappings
 	{ key = "Enter", mods = "CTRL", action = wezterm.action({ SendString = "\x1b[13;5u" }) },
 	{ key = "Enter", mods = "SHIFT", action = wezterm.action({ SendString = "\x1b[13;2u" }) },
-	
+
 	-- Split panes (useful for running commands while coding)
 	{ key = "|", mods = "CTRL|SHIFT", action = wezterm.action({ SplitHorizontal = { domain = "CurrentPaneDomain" } }) },
 	{ key = "-", mods = "CTRL|SHIFT", action = wezterm.action({ SplitVertical = { domain = "CurrentPaneDomain" } }) },
-	
+
 	-- Navigate between panes
-	{ key = "h", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Left" }) },
-	{ key = "l", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Right" }) },
-	{ key = "k", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Up" }) },
-	{ key = "j", mods = "CTRL|SHIFT", action = wezterm.action({ ActivatePaneDirection = "Down" }) },
-	
+	{ key = "h", mods = "CTRL", action = wezterm.action({ ActivatePaneDirection = "Left" }) },
+	{ key = "l", mods = "CTRL", action = wezterm.action({ ActivatePaneDirection = "Right" }) },
+	{ key = "k", mods = "CTRL", action = wezterm.action({ ActivatePaneDirection = "Up" }) },
+	{ key = "j", mods = "CTRL", action = wezterm.action({ ActivatePaneDirection = "Down" }) },
+
 	-- Close pane
 	{ key = "x", mods = "CTRL|SHIFT", action = wezterm.action({ CloseCurrentPane = { confirm = false } }) },
-	
+
 	-- New tab
 	{ key = "t", mods = "CTRL|SHIFT", action = wezterm.action({ SpawnTab = "CurrentPaneDomain" }) },
-	
+
 	-- Navigate tabs
 	{ key = "[", mods = "CTRL|SHIFT", action = wezterm.action({ ActivateTabRelative = -1 }) },
 	{ key = "]", mods = "CTRL|SHIFT", action = wezterm.action({ ActivateTabRelative = 1 }) },

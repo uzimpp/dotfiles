@@ -11,13 +11,16 @@ export XDG_STATE_HOME="$HOME/.local/state"     # Logs and state files
 
 # Unified Theme System
 # Set this to: onedark, catppuccin, anysphere, tokyonight, mellifluous, or kanagawa
-# Changing this will update all tools: neovim, starship, wezterm
+# Changing this will update all tools: neovim, starship, wezterm, ghostty
 export THEME="mellifluous"
 
 # Derive individual theme variables from unified THEME
 export NVIM_THEME="$THEME"
 export STARSHIP_THEME="$THEME"
 export WEZTERM_THEME="$THEME"
+
+# Source color definitions (must be after THEME is set)
+[ -f "$HOME/dotfiles/zsh/colors.zsh" ] && source "$HOME/dotfiles/zsh/colors.zsh"
 
 # Locale settings
 export LANG="en_US.UTF-8" # Sets default locale for all categories
