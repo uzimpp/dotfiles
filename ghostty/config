@@ -3,9 +3,9 @@
 
 # Fonts
 font-family = "GeistMono Nerd Font"
-font-size = 13
+font-size = 14
 
-adjust-cell-height = 13%
+adjust-cell-height = 16.18%
 # Window
 window-padding-balance = true
 unfocused-split-opacity = 0.67
@@ -34,7 +34,7 @@ selection-clear-on-copy = true
 
 # Mouse
 mouse-hide-while-typing = true
-mouse-scroll-multiplier = 1.67
+mouse-scroll-multiplier = 1.25
 
 # Colors
 config-file = ~/.config/ghostty/colors.inc
@@ -46,10 +46,10 @@ keybind = ctrl+shift+|=new_split:right
 keybind = ctrl+shift+_=new_split:down
 
 # Pane navigation with Ctrl+Shift+hjkl (vim-style)
-keybind = ctrl+h=goto_split:left
-keybind = ctrl+j=goto_split:down
-keybind = ctrl+k=goto_split:up
-keybind = ctrl+l=goto_split:right
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:down
+keybind = ctrl+shift+k=goto_split:up
+keybind = ctrl+shift+l=goto_split:right
 
 # Tabs with Ctrl+Shift
 keybind = ctrl+shift+t=new_tab
