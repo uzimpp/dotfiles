@@ -12,17 +12,19 @@ config.adjust_window_size_when_changing_font_size = false
 config.check_for_updates = true
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = false
+-- config.window_decorations = "RESIZE"
+-- config.hide_tab_bar_if_only_one_tab = true
 -- config.use_resize_increments = true
 
 config.font = wezterm.font("GeistMono Nerd Font", { weight = "Regular" })
 config.font_size = 14
 config.custom_block_glyphs = true
 config.cell_width = 1.0
-config.line_height = 1.1
+config.line_height = 1.0
 config.enable_tab_bar = true
 config.window_padding = {
 	left = 4,
-	right = 4,
+	right = 0,
 	top = 0,
 	bottom = 0,
 }
@@ -93,6 +95,20 @@ config.hyperlink_rules = {
 		highlight = 1,
 	},
 }
+local smart_splits = wezterm.plugin.require("https://github.com/mrjones2014/smart-splits.nvim")
 
+smart_splits.apply_to_config(config, {
+  direction_keys = {
+    move = { 'h', 'j', 'k', 'l' },
+    resize = { 'LeftArrow', 'DownArrow', 'UpArrow', 'RightArrow' },
+  },
+  -- modifier keys to combine with direction_keys
+  modifiers = {
+    move = 'CTRL', -- modifier to use for pane movement, e.g. CTRL+h to move left
+    resize = 'META', -- modifier to use for pane resize, e.g. META+h to resize to the left
+  },
+  -- log level to use: info, warn, error
+  log_level = 'info',
+})
 -- Theme is set in wezterm.lua after config is loaded
 return config

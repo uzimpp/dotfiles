@@ -92,29 +92,24 @@ DEVELOPMENT=(
 
 # GUI Applications (casks)
 APPS=(
+    "ghostty"
     "wezterm"
     "visual-studio-code"
-    "discord"
-    "slack"
-    "notion"
-    "figma"
-    "spotify"
     "arc"
     "raycast"
     "1password"
     "docker"
     "postman"
-    "tableplus"
+    "discord"
+    "notion"
+    "figma"
+    "spotify"
 )
 
 # Nerd Fonts
 FONTS=(
     "font-jetbrains-mono-nerd-font"
     "font-geist-mono-nerd-font"
-    "font-fira-code-nerd-font"
-    "font-hack-nerd-font"
-    "font-meslo-lg-nerd-font"
-    "font-sf-mono-nerd-font"
 )
 
 # ============================================================================
@@ -146,7 +141,7 @@ list_packages() {
     echo -e "${BOLD}${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${BOLD}${CYAN}║              Available Packages                            ║${NC}"
     echo -e "${BOLD}${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
-    
+
     print_header "Essential (always installed)"
     for pkg in "${ESSENTIAL[@]}"; do
         if command -v "$pkg" &>/dev/null || [ "$pkg" = "neovim" ] && command -v nvim &>/dev/null; then
@@ -155,7 +150,7 @@ list_packages() {
             print_info "$pkg"
         fi
     done
-    
+
     print_header "Terminal & Shell"
     for pkg in "${TERMINAL[@]}"; do
         local cmd="$pkg"
@@ -167,7 +162,7 @@ list_packages() {
             print_info "$pkg"
         fi
     done
-    
+
     print_header "Development (--dev)"
     for pkg in "${DEVELOPMENT[@]}"; do
         if command -v "$pkg" &>/dev/null; then
@@ -176,7 +171,7 @@ list_packages() {
             print_info "$pkg"
         fi
     done
-    
+
     print_header "Applications (--apps)"
     for app in "${APPS[@]}"; do
         if brew list --cask "$app" &>/dev/null 2>&1; then
@@ -185,7 +180,7 @@ list_packages() {
             print_info "$app"
         fi
     done
-    
+
     print_header "Fonts (--fonts)"
     for font in "${FONTS[@]}"; do
         if brew list --cask "$font" &>/dev/null 2>&1; then
@@ -204,7 +199,7 @@ install_homebrew() {
             print_step "[DRY RUN] Would install Homebrew"
         else
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            
+
             # Add Homebrew to PATH for Apple Silicon
             if [[ $(uname -m) == "arm64" ]]; then
                 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -219,9 +214,9 @@ install_formulas() {
     local name="$1"
     shift
     local packages=("$@")
-    
+
     print_header "Installing $name"
-    
+
     local to_install=()
     for pkg in "${packages[@]}"; do
         if brew list "$pkg" &>/dev/null 2>&1; then
@@ -230,7 +225,7 @@ install_formulas() {
             to_install+=("$pkg")
         fi
     done
-    
+
     if [ ${#to_install[@]} -gt 0 ]; then
         if [ "$DRY_RUN" = true ]; then
             for pkg in "${to_install[@]}"; do
@@ -249,9 +244,9 @@ install_casks() {
     local name="$1"
     shift
     local casks=("$@")
-    
+
     print_header "Installing $name"
-    
+
     for cask in "${casks[@]}"; do
         if brew list --cask "$cask" &>/dev/null 2>&1; then
             print_success "$cask (already installed)"
@@ -315,47 +310,47 @@ main() {
     echo -e "${BOLD}${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${BOLD}${CYAN}║              Dotfiles Installer                            ║${NC}"
     echo -e "${BOLD}${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
-    
+
     if [ "$DRY_RUN" = true ]; then
         print_warning "DRY RUN MODE - No changes will be made"
     fi
-    
+
     # Install Homebrew first
     install_homebrew
-    
+
     # Update Homebrew
     print_header "Updating Homebrew"
     if [ "$DRY_RUN" = false ]; then
         brew update
     fi
-    
+
     # Add font tap
     if [ "$INSTALL_FONTS" = true ] || [ "$INSTALL_ALL" = true ]; then
         if [ "$DRY_RUN" = false ]; then
             brew tap homebrew/cask-fonts 2>/dev/null || true
         fi
     fi
-    
+
     # Always install essentials and terminal tools
     install_formulas "Essential Tools" "${ESSENTIAL[@]}"
     install_formulas "Terminal & Shell" "${TERMINAL[@]}"
-    
+
     # Optional installs based on flags
     if [ "$INSTALL_DEV" = true ] || [ "$INSTALL_ALL" = true ]; then
         install_formulas "Development Tools" "${DEVELOPMENT[@]}"
     fi
-    
+
     if [ "$INSTALL_APPS" = true ] || [ "$INSTALL_ALL" = true ]; then
         install_casks "Applications" "${APPS[@]}"
     fi
-    
+
     if [ "$INSTALL_FONTS" = true ] || [ "$INSTALL_ALL" = true ]; then
         install_casks "Nerd Fonts" "${FONTS[@]}"
     fi
-    
+
     # Summary
     print_header "Installation Complete!"
-    
+
     if [ "$DRY_RUN" = true ]; then
         print_warning "This was a dry run - no changes were made"
         echo ""
@@ -363,13 +358,13 @@ main() {
         echo -e "  1. ${CYAN}Run without --dry-run to install${NC}"
     else
         print_success "All requested packages have been processed"
-        
+
         # Reload WezTerm if it was installed and is running
         if command -v wezterm &>/dev/null && pgrep -f "wezterm" &>/dev/null; then
             wezterm cli reload-configuration 2>/dev/null && \
                 print_success "WezTerm reloaded" || true
         fi
-        
+
         echo ""
         echo -e "${BOLD}${GREEN}✓ Installation complete!${NC}"
         echo ""

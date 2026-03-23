@@ -4,7 +4,7 @@
 
 ---
 
-## 🖥️ WezTerm
+## 🖥️ Terminal (WezTerm / Ghostty)
 
 | Key | Action |
 |-----|--------|
@@ -182,8 +182,8 @@
 
 | Key | Action |
 |-----|--------|
-| `<leader>m` | Add file to Harpoon |
-| `<leader>M` | Open Harpoon menu |
+| `<leader>M` | Add file to Harpoon |
+| `<leader>m` | Open Harpoon menu |
 | `<leader>m1`–`5` | Jump to Harpoon file 1–5 |
 | `<leader>mp` | Prev Harpoon file |
 | `<leader>mn` | Next Harpoon file |

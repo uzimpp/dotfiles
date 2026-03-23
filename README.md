@@ -1,22 +1,20 @@
-# 🎨 Dotfiles
+# Dotfiles
 
-Modern, minimal dotfiles with a **unified theme system** across all tools.
+Modern, minimal dotfiles with a unified theme system across all tools.
 
-![Theme: Anysphere](https://img.shields.io/badge/Theme-Anysphere-181818?style=flat-square&labelColor=61afef)
-![Font: Geist Mono](https://img.shields.io/badge/Font-Geist%20Mono-orange?style=flat-square)
-![Shell: Zsh](https://img.shields.io/badge/Shell-Zsh-4EAA25?style=flat-square)
+Theme: Anysphere | Font: Geist Mono | Shell: Zsh
 
-## ✨ Features
+## Features
 
-- 🎨 **Unified Theming** - One `THEME` variable controls all tools
-- 🖥️ **WezTerm** - GPU-accelerated terminal with custom themes
-- ⚡ **Neovim** - Full IDE setup with LSP, completion, and more
-- 🚀 **Starship** - Fast, minimal prompt
-- 📁 **Neo-tree** - File explorer with git integration
-- 🔍 **Telescope** - Fuzzy finder for everything
-- 💅 **Consistent Font** - Geist Mono Nerd Font everywhere
+- Unified Theming - One `THEME` variable controls all tools
+- WezTerm / Ghostty - GPU-accelerated terminal with custom themes
+- Neovim - Full IDE setup with LSP, completion, and more
+- Starship - Fast, minimal prompt
+- Neo-tree - File explorer with git integration
+- Telescope - Fuzzy finder for everything
+- Consistent Font - Geist Mono Nerd Font everywhere
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install Dependencies
 
@@ -45,7 +43,7 @@ Or install selectively:
 source ~/.zshrc
 ```
 
-## 🎨 Themes
+## Themes
 
 | Theme | Description |
 |-------|-------------|
@@ -66,7 +64,7 @@ Or edit `~/.config/zsh/.zshenv`:
 export THEME="anysphere"
 ```
 
-## 📁 Structure
+## Structure
 
 ```
 dotfiles/
@@ -86,9 +84,8 @@ dotfiles/
 │   ├── config.lua
 │   └── events.lua
 │
-├── kitty/              # Kitty terminal
-│   ├── kitty.conf
-│   └── *.conf          # Theme configs
+├── ghostty/            # Ghostty terminal
+│   └── config
 │
 ├── starship/           # Starship prompt
 │   └── starship.toml
@@ -100,7 +97,7 @@ dotfiles/
     └── custom.zsh
 ```
 
-## ⌨️ Key Bindings
+## Key Bindings
 
 ### Neovim
 
@@ -114,33 +111,38 @@ dotfiles/
 | `<leader>gg` | Open Lazygit |
 | `\\` | Reveal current file |
 
-### Terminal
+### Terminal (WezTerm / Ghostty)
 
 | Key | Action |
 |-----|--------|
-| `Ctrl+h/j/k/l` | Navigate splits |
-| `Cmd+Shift+R` | Reload WezTerm config |
+| `Ctrl+Shift+h/j/k/l` | Navigate splits |
+| `Ctrl+Shift+\|` | Split horizontally |
+| `Ctrl+Shift+-` | Split vertically |
+| `Ctrl+Shift+t` | New tab |
+| `Ctrl+Shift+[` | Previous tab |
+| `Ctrl+Shift+]` | Next tab |
+| `Ctrl+Shift+x` | Close pane |
 
-## 🔧 Configuration
+## Configuration
 
 ### Font
 
-All configs use **Geist Mono Nerd Font**:
+All configs use Geist Mono Nerd Font:
 
 - WezTerm: `config.lua`
-- Kitty: `custom.conf`
+- Ghostty: `config`
 - Neovim: Inherits from terminal
 
 ### Git Blame (GitLens-style)
 
-Shows in status bar: `Author at 08 Jan 2026 • commit message...`
+Shows in status bar: `Author at 08 Jan 2026 - commit message...`
 
-Configure in `nvim/lua/plugins/misc.lua`:
+Configure in `nvim/lua/plugins/gitblame.lua`:
 ```lua
 vim.g.gitblame_max_commit_summary_length = 20
 ```
 
-## 📦 What Gets Installed
+## What Gets Installed
 
 ### Essential
 - git, zsh, neovim, starship
@@ -163,7 +165,7 @@ vim.g.gitblame_max_commit_summary_length = 20
 - Fira Code Nerd Font
 - Hack Nerd Font
 
-## 🔄 Updating
+## Updating
 
 ```bash
 cd ~/dotfiles
@@ -171,4 +173,3 @@ git pull
 ```
 
 Symlinks automatically point to updated files!
-
