@@ -131,9 +131,17 @@ switch_theme() {
             COLOR8="#414868"; COLOR9="#f7768e"; COLOR10="#9ece6a"; COLOR11="#e0af68"
             COLOR12="#7aa2f7"; COLOR13="#bb9af7"; COLOR14="#7dcfff"; COLOR15="#c0caf5"
             ;;
+        vague)
+            COLOR_FG="#cdcdcd"; COLOR_BG="#141415"; COLOR_CURSOR="#cdcdcd"
+            COLOR_SELECTION_FG="#cdcdcd"; COLOR_SELECTION_BG="#252530"
+            COLOR0="#141415"; COLOR1="#d8647e"; COLOR2="#7fa563"; COLOR3="#f3be7c"
+            COLOR4="#6e94b2"; COLOR5="#bb9dbd"; COLOR6="#b4d4cf"; COLOR7="#cdcdcd"
+            COLOR8="#252530"; COLOR9="#d8647e"; COLOR10="#7fa563"; COLOR11="#f3be7c"
+            COLOR12="#6e94b2"; COLOR13="#bb9dbd"; COLOR14="#b4d4cf"; COLOR15="#aeaed1"
+            ;;
         *)
             echo "Unknown theme: $theme"
-            echo "Available: mellifluous, anysphere, onedark, kanagawa, catppuccin, tokyonight"
+            echo "Available: mellifluous, anysphere, onedark, kanagawa, catppuccin, tokyonight, vague"
             return 1
             ;;
     esac
@@ -152,19 +160,8 @@ switch_theme() {
         sed -i '' "s/export THEME=.*/export THEME=\"$theme\"/" "$zshenv"
     fi
     
-    reload_ghostty
-    
-    echo "Switched to theme: $theme"
 }
 
-reload_ghostty() {
-    if pgrep -x ghostty &>/dev/null; then
-        killall ghostty 2>/dev/null; sleep 0.1
-        open -a ghostty 2>/dev/null && echo "Ghostty reloaded"
-    else
-        echo "Ghostty is not running"
-    fi
-}
 
 if [[ -n "$THEME" && "$THEME" != "mellifluous" ]]; then
     switch_theme "$THEME"

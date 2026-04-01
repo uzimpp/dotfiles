@@ -23,6 +23,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins
 require('lazy').setup({
+  { "vague-theme/vague.nvim", lazy = false, priority = 1000 },
   require(theme.get_theme_module()),
   require 'plugins.telescope',
   require 'plugins.treesitter',

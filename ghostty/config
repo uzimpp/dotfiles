@@ -5,10 +5,11 @@
 font-family = "GeistMono Nerd Font"
 font-size = 14
 
-adjust-cell-height = 16.18%
+adjust-cell-height = 15.18%
 # Window
 window-padding-balance = true
-unfocused-split-opacity = 0.67
+unfocused-split-opacity = 1
+# background-opacity = 0.9
 resize-overlay = always
 quit-after-last-window-closed = true
 confirm-close-surface = false
@@ -89,7 +90,7 @@ keybind = cmd+a=select_all
 keybind = ctrl+shift+x=close_surface
 
 # Font size adjustment (all panes)
-keybind = cmd+plus=all:increase_font_size
-keybind = cmd+minus=all:decrease_font_size
-keybind = cmd+zero=all:reset_font_size
+# keybind = cmd+plus=all:increase_font_size
+# keybind = cmd+minus=all:decrease_font_size
+# keybind = cmd+zero=all:reset_font_size
 
