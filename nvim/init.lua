@@ -2,6 +2,14 @@ require 'core.options'  -- Load general options
 require 'core.keymaps'  -- Load general keymaps
 require 'core.snippets' -- Custom code snippets
 
+-- Suppress LSP loading messages globally
+local _notify = vim.notify
+vim.notify = function(msg, level, opts)
+  if type(msg) == 'string' and (msg:lower():find('load') or msg:lower():find('workspace')) then return end
+  if level == vim.log.levels.DEBUG then return end
+  return _notify(msg, level, opts)
+end
+
 -- Load theme configuration
 local theme = require 'config.theme'
 local current_theme = theme.get_theme()
@@ -34,12 +42,8 @@ require('lazy').setup({
   require 'plugins.lualine',
   require 'plugins.gitblame',
   require 'plugins.oklch-color-picker',
-  -- require 'plugins.bufferline',
-  -- require 'plugins.splits',
   require 'plugins.formatting',
-  require 'plugins.rainbow',
   require 'plugins.neo-tree',
-  require 'plugins.oil',
   require 'plugins.indent-blankline',
   require 'plugins.smear-cursor',
   require 'plugins.markdown-preview',
@@ -48,13 +52,11 @@ require('lazy').setup({
   require 'plugins.gitsigns',
   require 'plugins.autopairs',
   require 'plugins.surround',
-  require 'plugins.flash',
-  require 'plugins.spectre',
   require 'plugins.harpoon',
   require 'plugins.dap',
   require 'plugins.trouble',
-  require 'plugins.session',
   require 'plugins.which-key',
+  require 'plugins.image',
 }, {
   defaults = {
     lazy = true,

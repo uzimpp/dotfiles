@@ -3,24 +3,6 @@ return {
   lazy = false,
   priority = 1000,
   config = function()
-    -- Suppress ALL performance-related messages during theme setup
-    local original_notify = vim.notify
-    local original_print = print
-
-    -- Override vim.notify to skip performance messages
-    vim.notify = function(msg, level, opts)
-      if type(msg) == 'string' and msg:find('Performance:') then return end
-      if level == vim.log.levels.DEBUG then return end
-      return original_notify(msg, level, opts)
-    end
-
-    -- Override print to skip performance messages
-    print = function(...)
-      local args = { ... }
-      if #args > 0 and type(args[1]) == 'string' and args[1]:find('Performance:') then return end
-      return original_print(...)
-    end
-
     require('cursor-dark-anysphere').setup({
       style = 'dark',
       transparent = true,
@@ -108,9 +90,9 @@ return {
     -- Restore print (but keep vim.notify filter for performance messages)
     print = original_print
 
-    -- Keep vim.notify filter permanently to catch async performance messages
+    -- Keep vim.notify filter permanently to catch async messages
     vim.notify = function(msg, level, opts)
-      if type(msg) == 'string' and msg:find('Performance:') then return end
+      if type(msg) == 'string' and (msg:find('Performance:') or msg:lower():find('load') or msg:lower():find('workspace')) then return end
       if level == vim.log.levels.DEBUG then return end
       return original_notify(msg, level, opts)
     end

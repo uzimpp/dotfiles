@@ -57,11 +57,10 @@ return {
       dashboard.button('r', '  Recent files', '<cmd>Telescope oldfiles<CR>'),
       dashboard.button('p', '  Projects', '<cmd>Telescope projects<CR>'),
       dashboard.button('l', '󰒲  Lazy', '<cmd>Lazy<CR>'),
-      dashboard.button('s', '󰦨  Restore session', '<cmd>lua require("persistence").load()<CR>'),
       dashboard.button('q', '󰿅  Quit', '<cmd>qa<CR>'),
     }
 
-    dashboard.section.footer.val = { '"Skill issue", uzimp', "" }
+    dashboard.section.footer.val = { '"Skill issue"', "" }
 
     -- Set up alpha
     alpha.setup(dashboard.opts)

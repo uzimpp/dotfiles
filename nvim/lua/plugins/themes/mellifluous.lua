@@ -139,7 +139,7 @@ return {
 			hl(0, "NeoTreeNormalNC", { bg = c.ui_bg, fg = c.fg_dim })
 			hl(0, "NeoTreeEndOfBuffer", { bg = c.ui_bg, fg = c.ui_bg })
 			hl(0, "NeoTreeCursorLine", { bg = c.bg_visual })
-			hl(0, "NeoTreeWinSeparator", { fg = c.ui_bg, bg = c.ui_bg })
+			-- hl(0, "NeoTreeWinSeparator", { fg = c.ui_bg, bg = c.ui_bg })
 			hl(0, "NeoTreeIndentMarker", { fg = c.fg_dim })
 			hl(0, "NeoTreeFileName", { fg = c.fg_dim })
 			hl(0, "NeoTreeDirectoryName", { fg = c.fg_dim })
@@ -157,7 +157,7 @@ return {
 			hl(0, "NeoTreeHiddenByName", { fg = c.fg_gutter })
 			hl(0, "NeoTreeGitIgnored", { fg = c.fg_gutter })
 			hl(0, "NeoTreeIgnored", { fg = c.fg_gutter })
-
+			--
 			-- ── Telescope ───────────────────────────────────────────────────
 			hl(0, "TelescopeNormal", { bg = c.ui_bg, fg = c.fg_dim })
 			hl(0, "TelescopeBorder", { fg = c.ui_bg, bg = c.ui_bg })

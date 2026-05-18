@@ -9,43 +9,46 @@ return {
 				require("conform").format({ async = true, lsp_fallback = true })
 			end,
 			mode = "n",
-			desc = "buffer format",
+			desc = "Buffer Format",
 		},
 	},
 	config = function()
-		-- 1. Setup Conform
 		require("conform").setup({
-			notify_on_error = false,
-			format_on_save = function(bufnr)
-				-- Disable autoformat on certain filetypes if you want
-				local disable_filetypes = { c = true, cpp = true }
-				if disable_filetypes[vim.bo[bufnr].filetype] then
-					return
-				end
-				return {
-					timeout_ms = 500,
-					lsp_fallback = true,
-				}
-			end,
+			notify_on_error = true,
+			format_on_save = false, -- manual only via <leader>bf
+
 			formatters_by_ft = {
 				lua = { "stylua" },
-				python = { "ruff_format" }, -- ruff is much faster than autopep8/black
+				python = { "ruff_format", "ruff_organize_imports" },
+				go = { "goimports", "gofumpt" },
+				rust = { lsp_format = "fallback" },
+				java = { lsp_format = "fallback" },
+				c = { "clang_format" },
+				cpp = { "clang_format" },
 				javascript = { "prettier" },
 				typescript = { "prettier" },
+				javascriptreact = { "prettier" },
+				typescriptreact = { "prettier" },
 				html = { "prettier" },
 				css = { "prettier" },
-				go = { "goimports", "gofmt" }, -- runs sequentially
+				scss = { "prettier" },
+				json = { "prettier" },
+				jsonc = { "prettier" },
+				yaml = { "prettier" },
+				markdown = { "prettier" },
+				sh = { "shfmt" },
+				bash = { "shfmt" },
+				["*"] = { "trim_whitespace" },
 			},
-		})
 
-		-- 2. Tell Mason to auto-install these formatters so you don't have to do it manually
-		require("mason-tool-installer").setup({
-			ensure_installed = {
-				"stylua",
-				"prettier",
-				"goimports",
+			formatters = {
+				shfmt = {
+					prepend_args = { "-i", "2", "-ci", "-sr" },
+				},
+				prettier = {
+					prepend_args = { "--prose-wrap", "always" },
+				},
 			},
-			-- We don't need to put 'ruff' here because it's already installed via the LSP config
 		})
 	end,
 }

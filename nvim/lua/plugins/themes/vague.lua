@@ -3,6 +3,14 @@ return {
   lazy = false,
   priority = 1000,
   config = function()
+    local original_notify = vim.notify
+
+    vim.notify = function(msg, level, opts)
+      if type(msg) == 'string' and (msg:find('Performance:') or msg:find('loading') or msg:find('workspace')) then return end
+      if level == vim.log.levels.DEBUG then return end
+      return original_notify(msg, level, opts)
+    end
+
     local vague = require('vague')
     vague.setup({
       transparent = false,

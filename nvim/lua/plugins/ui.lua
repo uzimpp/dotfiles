@@ -10,12 +10,18 @@ return {
   config = function()
     require('noice').setup({
       presets = {
-        bottom_search = true,
         command_palette = true,
         long_message_to_split = true,
       },
       -- Minimize notifications
       routes = {
+        {
+          filter = {
+            event = 'notify',
+            find = 'workspace',
+          },
+          opts = { skip = true },
+        },
         -- Skip performance profiling messages from theme
         {
           filter = {
@@ -40,7 +46,7 @@ return {
               { find = '; before #%d+' },
             },
           },
-          view = 'mini',
+          opts = { skip = true },
         },
       },
       views = {

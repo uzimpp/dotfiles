@@ -15,7 +15,7 @@ export COLOR3="#bfb68e"  # yellow
 export COLOR4="#a1a5be"  # blue
 export COLOR5="#b99bb3"  # magenta
 export COLOR6="#a1b0be"  # cyan
-export COLOR7="#cccccc"  # white
+export COLOR7="#AEAEAE"  # white
 export COLOR8="#4d4d4d"  # bright black
 export COLOR9="#d59192"   # bright red
 export COLOR10="#97b393"  # bright green
@@ -87,7 +87,7 @@ switch_theme() {
             COLOR_FG="#cccccc"; COLOR_BG="#141414"; COLOR_CURSOR="#cccccc"
             COLOR_SELECTION_FG="#cccccc"; COLOR_SELECTION_BG="#2d2d2d"
             COLOR0="#2d2d2d"; COLOR1="#d59192"; COLOR2="#97b393"; COLOR3="#bfb68e"
-            COLOR4="#a1a5be"; COLOR5="#b99bb3"; COLOR6="#a1b0be"; COLOR7="#cccccc"
+            COLOR4="#a1a5be"; COLOR5="#b99bb3"; COLOR6="#a1b0be"; COLOR7="#AEAEAE"
             COLOR8="#4d4d4d"; COLOR9="#d59192"; COLOR10="#97b393"; COLOR11="#bfb68e"
             COLOR12="#a1a5be"; COLOR13="#b99bb3"; COLOR14="#a1b0be"; COLOR15="#cccccc"
             ;;
@@ -134,9 +134,9 @@ switch_theme() {
         vague)
             COLOR_FG="#cdcdcd"; COLOR_BG="#141415"; COLOR_CURSOR="#cdcdcd"
             COLOR_SELECTION_FG="#cdcdcd"; COLOR_SELECTION_BG="#252530"
-            COLOR0="#141415"; COLOR1="#d8647e"; COLOR2="#7fa563"; COLOR3="#f3be7c"
+            COLOR0="#252530"; COLOR1="#d8647e"; COLOR2="#7fa563"; COLOR3="#f3be7c"
             COLOR4="#6e94b2"; COLOR5="#bb9dbd"; COLOR6="#b4d4cf"; COLOR7="#cdcdcd"
-            COLOR8="#252530"; COLOR9="#d8647e"; COLOR10="#7fa563"; COLOR11="#f3be7c"
+            COLOR8="#373730"; COLOR9="#d8647e"; COLOR10="#7fa563"; COLOR11="#f3be7c"
             COLOR12="#6e94b2"; COLOR13="#bb9dbd"; COLOR14="#b4d4cf"; COLOR15="#aeaed1"
             ;;
         *)
@@ -145,13 +145,13 @@ switch_theme() {
             return 1
             ;;
     esac
-    
+
     export COLOR_FG COLOR_BG COLOR_CURSOR COLOR_SELECTION_FG COLOR_SELECTION_BG
     export COLOR0 COLOR1 COLOR2 COLOR3 COLOR4 COLOR5 COLOR6 COLOR7
     export COLOR8 COLOR9 COLOR10 COLOR11 COLOR12 COLOR13 COLOR14 COLOR15
-    
+
     export THEME="$theme" NVIM_THEME="$theme" STARSHIP_THEME="$theme"
-    
+
     _generate_ghostty_config
     _generate_wezterm_colors
 
@@ -159,7 +159,7 @@ switch_theme() {
     if grep -q 'export THEME=' "$zshenv" 2>/dev/null; then
         sed -i '' "s/export THEME=.*/export THEME=\"$theme\"/" "$zshenv"
     fi
-    
+
 }
 
 

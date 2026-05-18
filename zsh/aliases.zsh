@@ -1,11 +1,3 @@
-# System
-alias shutdown='sudo shutdown now'
-alias restart='sudo reboot'
-alias suspend='sudo pm-suspend'
-alias sleep='pmset sleepnow'
-alias c='clear'
-alias e='exit'
-
 # Git
 alias g='git'
 alias ga='git add'
@@ -71,8 +63,8 @@ alias vi='poetry_run_nvim'
 alias v='poetry_run_nvim'
 
 # Folders
-alias doc="$HOME/Documents"
-alias dow="$HOME/Downloads"
+alias doc="$HOME/documents"
+alias dow="$HOME/downloads"
 
 # Ranger
 alias r=". ranger"
@@ -88,3 +80,9 @@ export PATH="$HOME/.bun/bin:$PATH"
 
 # java
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
+# python
+alias python='python3'
+
+# GO
+export PATH="$HOME/go/bin:$PATH"

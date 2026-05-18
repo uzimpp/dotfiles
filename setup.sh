@@ -4,7 +4,7 @@
 # This script creates symlinks from the dotfiles directory to the correct config locations
 # For installing dependencies, use ./install.sh
 
-set -e  # Exit on error
+set -e # Exit on error
 
 # ============================================================================
 # Colors and Formatting
@@ -47,7 +47,7 @@ BACKUP=true
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --dry-run|-n)
+        --dry-run | -n)
             DRY_RUN=true
             shift
             ;;
@@ -55,7 +55,7 @@ while [[ $# -gt 0 ]]; do
             BACKUP=false
             shift
             ;;
-        --help|-h)
+        --help | -h)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
@@ -84,12 +84,12 @@ done
 create_symlink() {
     local source="$1"
     local target="$2"
-    
+
     if [ "$DRY_RUN" = true ]; then
         print_step "[DRY RUN] Would link: $target ${ARROW} $source"
         return
     fi
-    
+
     # Backup existing file/directory
     if [ -e "$target" ] || [ -L "$target" ]; then
         if [ "$BACKUP" = true ]; then
@@ -101,10 +101,10 @@ create_symlink() {
             rm -rf "$target"
         fi
     fi
-    
+
     # Create parent directory if needed
     mkdir -p "$(dirname "$target")"
-    
+
     # Create symlink
     ln -s "$source" "$target"
     print_success "Linked: $(basename "$target")"
@@ -115,19 +115,19 @@ create_symlink() {
 # ============================================================================
 check_essentials() {
     print_header "Checking Essentials"
-    
+
     local missing=()
     local tools=("git" "nvim" "zsh")
-    
+
     for tool in "${tools[@]}"; do
-        if command -v "$tool" &>/dev/null; then
+        if command -v "$tool" &> /dev/null; then
             print_success "$tool"
         else
             print_error "$tool (missing)"
             missing+=("$tool")
         fi
     done
-    
+
     if [ ${#missing[@]} -gt 0 ]; then
         echo ""
         print_warning "Missing tools detected!"
@@ -145,11 +145,11 @@ main() {
     echo -e "${BOLD}${CYAN}╚════════════════════════════════════════════════════╝${NC}"
     echo ""
     print_info "Dotfiles: $DOTFILES_DIR"
-    
+
     if [ "$DRY_RUN" = true ]; then
         print_warning "DRY RUN MODE - No changes will be made"
     fi
-    
+
     if [ "$BACKUP" = true ] && [ "$DRY_RUN" = false ]; then
         print_info "Backups: $BACKUP_DIR"
     fi
@@ -160,9 +160,9 @@ main() {
     # WezTerm (must be in home directory)
     print_header "WezTerm"
     create_symlink "$DOTFILES_DIR/wezterm/.wezterm.lua" "$HOME/.wezterm.lua"
-    [ -f "$DOTFILES_DIR/wezterm/config.lua" ] && \
+    [ -f "$DOTFILES_DIR/wezterm/config.lua" ] &&
         create_symlink "$DOTFILES_DIR/wezterm/config.lua" "$HOME/config.lua"
-    [ -f "$DOTFILES_DIR/wezterm/events.lua" ] && \
+    [ -f "$DOTFILES_DIR/wezterm/events.lua" ] &&
         create_symlink "$DOTFILES_DIR/wezterm/events.lua" "$HOME/events.lua"
 
     # Tmux
@@ -188,15 +188,15 @@ main() {
     else
         print_info "Skipped (not found)"
     fi
-    
+
     # Regenerate Ghostty colors based on THEME
     if [ "$DRY_RUN" = true ]; then
         print_step "[DRY RUN] Would regenerate ghostty/colors.inc"
     else
         print_step "Regenerating ghostty/colors.inc..."
-        if source "$HOME/.config/zsh/.zshenv" 2>/dev/null; then
-            if source "$HOME/.config/zsh/colors.zsh" 2>/dev/null; then
-                _generate_ghostty_config && print_success "colors.inc regenerated (theme: $THEME)" || \
+        if source "$HOME/.config/zsh/.zshenv" 2> /dev/null; then
+            if source "$HOME/.config/zsh/colors.zsh" 2> /dev/null; then
+                _generate_ghostty_config && print_success "colors.inc regenerated (theme: $THEME)" ||
                     print_warning "Failed to generate colors.inc"
             else
                 print_warning "colors.zsh not found"
@@ -230,9 +230,9 @@ main() {
         else
             print_step "Downloading git-completion.bash..."
             curl -fsSo "$GIT_COMPLETION" \
-                https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash \
-                && print_success "git-completion.bash downloaded" \
-                || print_warning "Failed to download git-completion.bash"
+                https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash &&
+                print_success "git-completion.bash downloaded" ||
+                print_warning "Failed to download git-completion.bash"
         fi
     else
         print_success "git-completion.bash (already present)"
@@ -248,7 +248,7 @@ main() {
             echo "# Dotfiles environment" > "$HOME/.zshenv"
             echo "$ZSHENV_LINE" >> "$HOME/.zshenv"
             print_success "Created ~/.zshenv"
-        elif ! grep -q ".config/zsh/.zshenv" "$HOME/.zshenv" 2>/dev/null; then
+        elif ! grep -q ".config/zsh/.zshenv" "$HOME/.zshenv" 2> /dev/null; then
             # File exists but doesn't have our line, APPEND (don't overwrite)
             echo "" >> "$HOME/.zshenv"
             echo "# Dotfiles environment" >> "$HOME/.zshenv"
@@ -265,7 +265,7 @@ main() {
             echo "# Dotfiles shell config" > "$HOME/.zshrc"
             echo "$ZSHRC_LINE" >> "$HOME/.zshrc"
             print_success "Created ~/.zshrc"
-        elif ! grep -q ".config/zsh/.zshrc" "$HOME/.zshrc" 2>/dev/null; then
+        elif ! grep -q ".config/zsh/.zshrc" "$HOME/.zshrc" 2> /dev/null; then
             # File exists but doesn't have our line, APPEND (don't overwrite)
             echo "" >> "$HOME/.zshrc"
             echo "# Dotfiles shell config" >> "$HOME/.zshrc"
@@ -286,7 +286,7 @@ main() {
         "$HOME/.config/nvim/init.lua:Neovim"
         "$HOME/.config/zsh/.zshrc:Zsh"
     )
-    
+
     for item in "${files[@]}"; do
         local file="${item%:*}"
         local name="${item#*:}"
@@ -299,40 +299,41 @@ main() {
 
     # Summary
     print_header "Complete!"
-    
+
     if [ "$DRY_RUN" = true ]; then
         print_warning "Dry run - no changes made"
         print_info "Run without --dry-run to apply"
     else
         print_success "All configurations linked!"
         [ -d "$BACKUP_DIR" ] && print_info "Backups: $BACKUP_DIR"
-        
+
         # Auto-reload everything
         print_header "Reloading..."
-        
+
         # Reload WezTerm if running
-        if command -v wezterm &>/dev/null && pgrep -f "wezterm" &>/dev/null; then
-            wezterm cli reload-configuration 2>/dev/null && \
-                print_success "WezTerm reloaded" || \
+        if command -v wezterm &> /dev/null && pgrep -f "wezterm" &> /dev/null; then
+            wezterm cli reload-configuration 2> /dev/null &&
+                print_success "WezTerm reloaded" ||
                 print_info "WezTerm: restart manually"
         fi
-        
+
         # Reload Starship (just needs shell reload)
-        if command -v starship &>/dev/null; then
+        if command -v starship &> /dev/null; then
             print_success "Starship will reload with shell"
         fi
-        
+
         # Reload Ghostty if running
-        if command -v ghostty &>/dev/null && pgrep -x ghostty &>/dev/null; then
+        if command -v ghostty &> /dev/null && pgrep -x ghostty &> /dev/null; then
             print_info "Reloading Ghostty..."
-            killall ghostty 2>/dev/null; sleep 0.1
-            open -a ghostty 2>/dev/null && print_success "Ghostty reloaded" || \
+            killall ghostty 2> /dev/null
+            sleep 0.1
+            open -a ghostty 2> /dev/null && print_success "Ghostty reloaded" ||
                 print_info "Ghostty: restart manually"
         fi
-        
+
         # Source the new shell config
         print_info "Sourcing shell configuration..."
-        
+
         echo ""
         echo -e "${BOLD}${GREEN}✓ Setup complete!${NC}"
         echo ""

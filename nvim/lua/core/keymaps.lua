@@ -23,9 +23,7 @@ vim.keymap.set('n', '<Esc>', ':noh<CR>', opts)
 
 -- File operations
 vim.keymap.set('n', '<C-s>', '<cmd> w <CR>', opts)
-vim.keymap.set('n', '<leader>sn', '<cmd>noautocmd w <CR>', opts) -- save without auto-formatting
 vim.keymap.set('n', '<C-q>', '<cmd> q <CR>', opts)
-vim.keymap.set('n', '<leader>W', '<cmd>wa<CR>', opts) -- save all buffers
 
 -- Delete single character without copying into register
 vim.keymap.set('n', 'x', '"_x', opts)
@@ -51,12 +49,15 @@ vim.keymap.set('n', '<Right>', ':vertical resize +2<CR>', opts)
 -- Buffer management
 vim.keymap.set('n', '<leader>x', ':Bdelete!<CR>', opts) -- close buffer
 vim.keymap.set('n', '<leader>X', ':bufdo Bdelete!<CR>', opts) -- close ALL buffers
-vim.keymap.set('n', '<leader>bn', '<cmd>enew<CR>', opts) -- new buffer
+vim.keymap.set('n', '<leader>bc', '<cmd>enew<CR>', opts) -- new buffer
 vim.keymap.set('n', '<leader>bo', '<cmd>%bd|e#|bd#<CR>', opts) -- close other buffers
-
--- Increment/decrement numbers
-vim.keymap.set('n', '<leader>+', '<C-a>', opts)
-vim.keymap.set('n', '<leader>-', '<C-x>', opts)
+vim.keymap.set('n', '<leader>bn', function()
+  vim.ui.input({ prompt = 'New buffer name: ' }, function(input)
+    if input and input ~= "" then
+      vim.cmd('file ' .. input)
+    end
+  end)
+end, { desc = 'Rename current buffer' })
 
 -- Window/split management
 vim.keymap.set('n', '<leader>|', '<C-w>v', opts) -- split vertically
@@ -132,7 +133,7 @@ vim.keymap.set('n', '<leader>dD', 'yyP', { desc = 'Duplicate line up' })
 vim.keymap.set('n', 'gf', '<C-w>vgf', { desc = 'Open file under cursor in vsplit' })
 
 -- Command mode shortcut
-vim.keymap.set('n', ';', ':', { noremap = true })
+-- vim.keymap.set('n', ';', ':', { noremap = true })
 
 -- Comment this if using bufferline instead
 -- Buffer navigation keymaps
@@ -174,9 +175,9 @@ vim.keymap.set('n', '<leader>9', function() switch_to_buffer(9) end, { desc = 'B
 --------------------------------------------------------------------------------
 
 -- Exit insert mode
-vim.keymap.set('i', 'hh', '<ESC>', opts)
+-- vim.keymap.set('i', 'hh', '<ESC>', opts)
 vim.keymap.set('i', 'jj', '<ESC>', opts)
--- vim.keymap.set('i', 'kk', '<ESC>', opts)
+vim.keymap.set('i', 'kk', '<ESC>', opts)
 -- vim.keymap.set('i', 'll', '<ESC>', opts)
 vim.keymap.set('i', 'jk', '<ESC>', opts)
 vim.keymap.set('i', 'kj', '<ESC>', opts)

@@ -31,7 +31,7 @@ clipboard-write = allow
 clipboard-trim-trailing-spaces = false
 copy-on-select = clipboard
 link-url = true
-selection-clear-on-copy = true
+selection-clear-on-copy = false
 
 # Mouse
 mouse-hide-while-typing = true
@@ -93,4 +93,3 @@ keybind = ctrl+shift+x=close_surface
 # keybind = cmd+plus=all:increase_font_size
 # keybind = cmd+minus=all:decrease_font_size
 # keybind = cmd+zero=all:reset_font_size
-

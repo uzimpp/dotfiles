@@ -41,23 +41,33 @@ return {
 
 		local lsp = {
 			"lsp_status",
+			icon = "",
+			-- Prepend the filetype icon to whatever lsp_status outputs
+			fmt = function(str)
+				if str == "" then
+					return ""
+				end
+				local ok, devicons = pcall(require, "nvim-web-devicons")
+				if ok then
+					local icon = devicons.get_icon_by_filetype(vim.bo.filetype, { default = false })
+					if icon and icon ~= "" then
+						return icon .. " " .. str
+					end
+				end
+				return str
+			end,
 			symbols = {
-				-- Standard unicode symbols to cycle through for LSP progress:
 				spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
-				-- Standard unicode symbol for when LSP is done:
-				done = "✓",
-				-- Delimiter inserted between LSP names:
+				done = "",
 				separator = " ",
 			},
-			-- List of LSP names to ignore (e.g., `null-ls`):
 			ignore_lsp = {},
-			-- Display the LSP name
 			show_name = true,
 		}
 
 		local branch = {
 			"branch",
-			icon = { "" },
+			icon = "",
 		}
 		-- -- Git blame component using git-blame.nvim (like VS Code GitLens)
 		local git_blame = {
@@ -77,11 +87,17 @@ return {
 				theme = "auto",
 				-- https://www.nerdfonts.com/cheat-sheet
 				--             ▓▒░ ░▒▓
-				component_separators = { left = "", right = "" },
+				component_separators = { left = "", right = "" }, -- 
 				section_separators = { left = "", right = "" },
-				disabled_filetypes = { "alpha" },
+				disabled_filetypes = {
+					"alpha",
+					statusline = {},
+					winbar = {},
+				},
 				globalstatus = false,
 				always_divide_middle = true,
+				ignore_focus = {},
+				always_show_tabline = false,
 			},
 			sections = {
 				-- lualine_a = { mode },
@@ -94,9 +110,8 @@ return {
 				lualine_a = { mode },
 				lualine_b = { filename },
 				lualine_c = { diagnostics },
-				-- lualine_x = { git_blame },
-				lualine_x = { branch },
-				lualine_y = { git_blame },
+				lualine_x = { branch, git_blame },
+				lualine_y = { lsp },
 				lualine_z = { "location" },
 			},
 			inactive_sections = {
@@ -107,7 +122,22 @@ return {
 				lualine_y = {},
 				lualine_z = {},
 			},
-			tabline = {},
+			tabline = {
+				-- lualine_a = { mode },
+				-- lualine_b = { 'branch' },
+				-- lualine_c = { filename },
+				-- lualine_x = { git_blame  },
+				-- lualine_x = { diagnostics },
+				-- lualine_y = { 'progress' },
+				-- lualine_z = { 'location' },
+				-- lualine_a = { mode },
+				-- lualine_b = { filename },
+				-- lualine_c = { diagnostics },
+				-- lualine_x = { git_blame },
+				-- lualine_x = { branch },
+				-- lualine_y = { git_blame },
+				-- lualine_z = { "location" },
+			},
 			extensions = { "fugitive", "neo-tree" },
 		})
 	end,
