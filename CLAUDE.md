@@ -5,18 +5,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Install dependencies (Homebrew packages)
+# Install dependencies (Homebrew on macOS, apt on Linux/WSL)
 ./install.sh           # Essential + terminal tools
-./install.sh --all     # Everything including apps and fonts
+./install.sh --all     # macOS: + apps + fonts. Linux/WSL: same as default (GUI apps skipped)
 ./install.sh --dev     # Add development tools
-./install.sh --apps    # Add GUI apps
-./install.sh --fonts   # Add Nerd Fonts
+./install.sh --apps    # macOS only: install GUI apps
+./install.sh --fonts   # macOS only: install Nerd Fonts
 ./install.sh --list    # Show all packages and install status
 
 # Create symlinks from dotfiles to config locations
-./setup.sh             # Full setup with backups
+./setup.sh             # Full setup (interactive on first run, then non-interactive)
 ./setup.sh --dry-run   # Preview what would be linked
 ./setup.sh --no-backup # Skip backup of existing files
+./setup.sh --reconfigure  # Re-prompt for component preferences
 
 # Apply shell changes after setup
 source ~/.zshrc
@@ -26,6 +27,24 @@ theme anysphere         # or: catppuccin, nord, nordic, onedark, vague
 ```
 
 ## Architecture
+
+### Cross-platform Support
+
+Both `install.sh` and `setup.sh` detect the host OS via a small `detect_os()` helper at the top of each script and set `$OS` to one of `macos`, `linux`, `wsl`, or `unsupported`.
+
+**install.sh** branches on `$OS`:
+- **macOS**: Homebrew formulas, casks, fonts, auto-reload of WezTerm.
+- **Linux** (Debian/Ubuntu): CLI tools via `apt` (mapped through `apt_name_for()`). Starship via its official installer. GUI apps and fonts must be installed manually.
+- **WSL**: same package handling as Linux.
+
+To support a new Linux distro, extend `apt_name_for()` (or add a parallel `dnf_name_for()` and branch on `$OS`).
+
+**setup.sh** uses a per-component preferences file: `~/.config/dotfiles/config`.
+- First run (or `--reconfigure`) prompts for each component: `local` (link to current `$HOME`), `windows` (WSL only — link to `$WIN_HOME` resolved from `cmd.exe %USERPROFILE%` via `wslpath`), or `skip`.
+- Subsequent runs load the saved config silently.
+- Defaults are OS-aware: on WSL, WezTerm defaults to `windows`; Kitty/Ghostty default to `skip`; CLI tools default to `local`.
+- Each component block reads its `COMPONENT_<NAME>` variable and dispatches via `target_home_for()` → either `$HOME` or `$WIN_HOME`.
+- `prompt_choice()` must print its prompt to stderr (`>&2`) since the function's stdout is captured by `$(...)` to return the choice.
 
 ### Unified Theme System
 

@@ -36,8 +36,9 @@ function M.get_theme()
     return env_theme
   end
 
-  -- Fallback: read from .zshenv file (check multiple locations)
-  local home = os.getenv('HOME')
+  -- Fallback: read from .zshenv file (check multiple locations).
+  -- vim.fn.expand('~') works across macOS/Linux/WSL/Windows even when $HOME is unset.
+  local home = vim.fn.expand('~')
   local zshenv_paths = {
     home .. '/dotfiles/zsh/.zshenv',
     home .. '/.config/zsh/.zshenv',

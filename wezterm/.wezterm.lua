@@ -1,5 +1,6 @@
 local wezterm = require("wezterm")
-local home = os.getenv("HOME")
+-- HOME on macOS/Linux/WSL, USERPROFILE on native Windows, "." as a last resort.
+local home = os.getenv("HOME") or os.getenv("USERPROFILE") or "."
 package.path = package.path .. ";" .. home .. "/?.lua"
 
 local config = require("config")
@@ -25,26 +26,47 @@ end
 
 local env = get_shell_colors()
 
+-- Mellifluous theme — fallback when COLOR* env vars are unavailable
+local fallback = {
+    fg            = "#cccccc",
+    bg            = "#141414",
+    cursor        = "#cccccc",
+    selection_fg  = "#cccccc",
+    selection_bg  = "#2d2d2d",
+    tab_bg        = "#141414",
+    tab_active_bg = "#1a1a1a",
+    tab_active_fg = "#AEAEAE",
+    tab_inactive  = "#636363",
+    ansi = {
+        "#2d2d2d", "#d59192", "#97b393", "#bfb68e",
+        "#a1a5be", "#b99bb3", "#a1b0be", "#AEAEAE",
+    },
+    brights = {
+        "#4d4d4d", "#d59192", "#97b393", "#bfb68e",
+        "#a1a5be", "#b99bb3", "#a1b0be", "#cccccc",
+    },
+}
+
 local function load_colors()
     local ansi, brights = {}, {}
-    for i = 0, 7  do ansi[i + 1]    = env["COLOR" .. i] or "#000000" end
-    for i = 8, 15 do brights[i - 7] = env["COLOR" .. i] or "#000000" end
+    for i = 0, 7  do ansi[i + 1]    = env["COLOR" .. i] or fallback.ansi[i + 1]    end
+    for i = 8, 15 do brights[i - 7] = env["COLOR" .. i] or fallback.brights[i - 7] end
 
     return {
-        foreground    = env.COLOR_FG           or "#cccccc",
-        background    = env.COLOR_BG           or "#141414",
-        cursor_bg     = env.COLOR_CURSOR       or "#cccccc",
-        cursor_fg     = env.COLOR_BG           or "#141414",
-        cursor_border = env.COLOR_CURSOR       or "#cccccc",
-        selection_fg  = env.COLOR_SELECTION_FG or "#454545",
-        selection_bg  = env.COLOR_SELECTION_BG or "#2d2d2d",
+        foreground    = env.COLOR_FG           or fallback.fg,
+        background    = env.COLOR_BG           or fallback.bg,
+        cursor_bg     = env.COLOR_CURSOR       or fallback.cursor,
+        cursor_fg     = env.COLOR_BG           or fallback.bg,
+        cursor_border = env.COLOR_CURSOR       or fallback.cursor,
+        selection_fg  = env.COLOR_SELECTION_FG or fallback.selection_fg,
+        selection_bg  = env.COLOR_SELECTION_BG or fallback.selection_bg,
         ansi    = ansi,
         brights = brights,
         tab_bar = {
-            background   = env.COLOR_TAB_BG          or "#141414",
-            active_tab   = { bg_color = env.COLOR_TAB_ACTIVE_BG  or "#1a1a1a", fg_color = env.COLOR_TAB_ACTIVE_FG   or "#AEAEAE" },
-            inactive_tab = { bg_color = env.COLOR_TAB_BG         or "#141414", fg_color = env.COLOR_TAB_INACTIVE_FG or "#636363" },
-            new_tab      = { bg_color = env.COLOR_TAB_BG         or "#141414", fg_color = env.COLOR_TAB_INACTIVE_FG or "#636363" },
+            background   = env.COLOR_TAB_BG          or fallback.tab_bg,
+            active_tab   = { bg_color = env.COLOR_TAB_ACTIVE_BG  or fallback.tab_active_bg, fg_color = env.COLOR_TAB_ACTIVE_FG   or fallback.tab_active_fg },
+            inactive_tab = { bg_color = env.COLOR_TAB_BG         or fallback.tab_bg,        fg_color = env.COLOR_TAB_INACTIVE_FG or fallback.tab_inactive },
+            new_tab      = { bg_color = env.COLOR_TAB_BG         or fallback.tab_bg,        fg_color = env.COLOR_TAB_INACTIVE_FG or fallback.tab_inactive },
         },
     }
 end

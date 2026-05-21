@@ -18,8 +18,9 @@ return {
     tmux_show_only_in_active_window = true,
   },
   config = function(_, opts)
-    package.path = package.path .. ';' .. vim.fn.expand('$HOME') .. '/.luarocks/share/lua/5.1/?/init.lua'
-    package.path = package.path .. ';' .. vim.fn.expand('$HOME') .. '/.luarocks/share/lua/5.1/?.lua'
+    local home = vim.fn.expand('~')
+    package.path = package.path .. ';' .. home .. '/.luarocks/share/lua/5.1/?/init.lua'
+    package.path = package.path .. ';' .. home .. '/.luarocks/share/lua/5.1/?.lua'
     require('image').setup(opts)
 
     local augroup = vim.api.nvim_create_augroup('ImageViewer', { clear = true })

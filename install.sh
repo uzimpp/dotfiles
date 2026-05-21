@@ -1,9 +1,30 @@
 #!/bin/bash
 
 # Dotfiles Installation Script
-# This script installs all dependencies and applications via Homebrew
+# Installs CLI dependencies via the platform's native package manager
+# (Homebrew on macOS, apt on Debian/Ubuntu/WSL). GUI apps and fonts are
+# installed only on macOS; install them manually on Linux/WSL.
 
 set -e
+
+# ============================================================================
+# OS Detection
+# ============================================================================
+detect_os() {
+    case "$(uname -s)" in
+        Darwin) echo "macos" ;;
+        Linux)
+            if grep -qi microsoft /proc/version 2>/dev/null || [ -n "$WSL_DISTRO_NAME" ]; then
+                echo "wsl"
+            else
+                echo "linux"
+            fi
+            ;;
+        *) echo "unsupported" ;;
+    esac
+}
+
+OS="$(detect_os)"
 
 # ============================================================================
 # Colors and Formatting
@@ -112,6 +133,40 @@ FONTS=(
     "font-geist-mono-nerd-font"
 )
 
+# Map our canonical package names to apt package names.
+# Empty stdout means "no apt package — install manually if needed".
+# Defined as a function (not associative array) for bash 3.2 compatibility on macOS.
+apt_name_for() {
+    case "$1" in
+        git)       echo git ;;
+        zsh)       echo zsh ;;
+        neovim)    echo neovim ;;
+        tmux)      echo tmux ;;
+        fzf)       echo fzf ;;
+        zoxide)    echo zoxide ;;
+        eza)       echo eza ;;
+        bat)       echo bat ;;           # binary may be 'batcat' on older Ubuntu
+        fd)        echo fd-find ;;       # binary is 'fdfind' on Debian/Ubuntu
+        ripgrep)   echo ripgrep ;;
+        delta)     echo git-delta ;;
+        htop)      echo htop ;;
+        tree)      echo tree ;;
+        jq)        echo jq ;;
+        tldr)      echo tldr ;;
+        node)      echo nodejs ;;
+        python)    echo python3 ;;
+        go)        echo golang ;;
+        lua)       echo lua5.4 ;;
+        luarocks)  echo luarocks ;;
+        cmake)     echo cmake ;;
+        make)      echo make ;;
+        gcc)       echo gcc ;;
+        # Tools with no apt package — caller prints a manual-install notice:
+        # starship (handled separately), yq, thefuck, wezterm, lazygit, rust
+        *)         echo "" ;;
+    esac
+}
+
 # ============================================================================
 # Functions
 # ============================================================================
@@ -173,26 +228,37 @@ list_packages() {
     done
 
     print_header "Applications (--apps)"
-    for app in "${APPS[@]}"; do
-        if brew list --cask "$app" &>/dev/null 2>&1; then
-            print_success "$app"
-        else
-            print_info "$app"
-        fi
-    done
+    if [ "$OS" = "macos" ]; then
+        for app in "${APPS[@]}"; do
+            if brew list --cask "$app" &>/dev/null 2>&1; then
+                print_success "$app"
+            else
+                print_info "$app"
+            fi
+        done
+    else
+        print_info "GUI apps not auto-installed on $OS (install manually)"
+    fi
 
     print_header "Fonts (--fonts)"
-    for font in "${FONTS[@]}"; do
-        if brew list --cask "$font" &>/dev/null 2>&1; then
-            print_success "$font"
-        else
-            print_info "$font"
-        fi
-    done
+    if [ "$OS" = "macos" ]; then
+        for font in "${FONTS[@]}"; do
+            if brew list --cask "$font" &>/dev/null 2>&1; then
+                print_success "$font"
+            else
+                print_info "$font"
+            fi
+        done
+    else
+        print_info "Fonts not auto-installed on $OS (install Nerd Fonts manually)"
+    fi
     echo ""
 }
 
 install_homebrew() {
+    # Only run on macOS; Linux/WSL use apt.
+    [ "$OS" = "macos" ] || return 0
+
     if ! command -v brew &>/dev/null; then
         print_header "Installing Homebrew"
         if [ "$DRY_RUN" = true ]; then
@@ -210,34 +276,84 @@ install_homebrew() {
     fi
 }
 
+# apt-get install wrapper. Uses sudo if not already root.
+apt_install() {
+    local pkg="$1"
+    local sudo_cmd=""
+    [ "$(id -u)" -ne 0 ] && sudo_cmd="sudo"
+    DEBIAN_FRONTEND=noninteractive $sudo_cmd apt-get install -y "$pkg"
+}
+
+apt_update_once() {
+    # Only refresh package index once per script run.
+    [ "$APT_UPDATED" = true ] && return 0
+    [ "$DRY_RUN" = true ] && { APT_UPDATED=true; return 0; }
+    local sudo_cmd=""
+    [ "$(id -u)" -ne 0 ] && sudo_cmd="sudo"
+    print_step "Updating apt package lists..."
+    $sudo_cmd apt-get update -qq || print_warning "apt-get update failed"
+    APT_UPDATED=true
+}
+
+# Install starship via its official installer (no apt package).
+install_starship_official() {
+    command -v starship &>/dev/null && { print_success "starship (already installed)"; return 0; }
+    if [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would install starship via official installer"
+    else
+        print_step "Installing starship via official installer..."
+        curl -fsSL https://starship.rs/install.sh | sh -s -- --yes \
+            || print_warning "Failed to install starship"
+    fi
+}
+
+# Install one formula on the current OS.
+install_one_formula() {
+    local pkg="$1"
+
+    if [ "$OS" = "macos" ]; then
+        if brew list "$pkg" &>/dev/null 2>&1; then
+            print_success "$pkg (already installed)"
+        elif [ "$DRY_RUN" = true ]; then
+            print_step "[DRY RUN] Would install: $pkg"
+        else
+            print_step "Installing $pkg..."
+            brew install "$pkg" || print_warning "Failed to install $pkg"
+        fi
+        return 0
+    fi
+
+    # Linux / WSL path: use apt with mapped name, or special-case.
+    if [ "$pkg" = "starship" ]; then
+        install_starship_official
+        return 0
+    fi
+
+    local apt_name
+    apt_name="$(apt_name_for "$pkg")"
+    if [ -z "$apt_name" ]; then
+        print_warning "$pkg (no apt package — install manually)"
+        return 0
+    fi
+
+    if dpkg -s "$apt_name" &>/dev/null; then
+        print_success "$pkg (already installed)"
+    elif [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would install: $apt_name (for $pkg)"
+    else
+        apt_update_once
+        print_step "Installing $apt_name (for $pkg)..."
+        apt_install "$apt_name" || print_warning "Failed to install $apt_name"
+    fi
+}
+
 install_formulas() {
     local name="$1"
     shift
-    local packages=("$@")
-
     print_header "Installing $name"
-
-    local to_install=()
-    for pkg in "${packages[@]}"; do
-        if brew list "$pkg" &>/dev/null 2>&1; then
-            print_success "$pkg (already installed)"
-        else
-            to_install+=("$pkg")
-        fi
+    for pkg in "$@"; do
+        install_one_formula "$pkg"
     done
-
-    if [ ${#to_install[@]} -gt 0 ]; then
-        if [ "$DRY_RUN" = true ]; then
-            for pkg in "${to_install[@]}"; do
-                print_step "[DRY RUN] Would install: $pkg"
-            done
-        else
-            for pkg in "${to_install[@]}"; do
-                print_step "Installing $pkg..."
-                brew install "$pkg" || print_warning "Failed to install $pkg"
-            done
-        fi
-    fi
 }
 
 install_casks() {
@@ -245,8 +361,14 @@ install_casks() {
     shift
     local casks=("$@")
 
-    print_header "Installing $name"
+    # Casks are macOS-only (Homebrew). Linux/WSL: print notice and skip.
+    if [ "$OS" != "macos" ]; then
+        print_header "Skipping $name"
+        print_info "GUI apps are not auto-installed on $OS — install them manually."
+        return 0
+    fi
 
+    print_header "Installing $name"
     for cask in "${casks[@]}"; do
         if brew list --cask "$cask" &>/dev/null 2>&1; then
             print_success "$cask (already installed)"
@@ -311,23 +433,30 @@ main() {
     echo -e "${BOLD}${CYAN}║              Dotfiles Installer                            ║${NC}"
     echo -e "${BOLD}${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
 
+    print_info "Detected OS: $OS"
+
+    if [ "$OS" = "unsupported" ]; then
+        print_error "Unsupported OS. This script supports macOS, Linux (apt), and WSL."
+        exit 1
+    fi
+
     if [ "$DRY_RUN" = true ]; then
         print_warning "DRY RUN MODE - No changes will be made"
     fi
 
-    # Install Homebrew first
-    install_homebrew
+    # macOS-only: install/update Homebrew and add the font tap.
+    if [ "$OS" = "macos" ]; then
+        install_homebrew
 
-    # Update Homebrew
-    print_header "Updating Homebrew"
-    if [ "$DRY_RUN" = false ]; then
-        brew update
-    fi
-
-    # Add font tap
-    if [ "$INSTALL_FONTS" = true ] || [ "$INSTALL_ALL" = true ]; then
+        print_header "Updating Homebrew"
         if [ "$DRY_RUN" = false ]; then
-            brew tap homebrew/cask-fonts 2>/dev/null || true
+            brew update
+        fi
+
+        if [ "$INSTALL_FONTS" = true ] || [ "$INSTALL_ALL" = true ]; then
+            if [ "$DRY_RUN" = false ]; then
+                brew tap homebrew/cask-fonts 2>/dev/null || true
+            fi
         fi
     fi
 
@@ -359,8 +488,8 @@ main() {
     else
         print_success "All requested packages have been processed"
 
-        # Reload WezTerm if it was installed and is running
-        if command -v wezterm &>/dev/null && pgrep -f "wezterm" &>/dev/null; then
+        # Reload WezTerm (macOS only — on Linux/WSL WezTerm typically runs elsewhere or not at all)
+        if [ "$OS" = "macos" ] && command -v wezterm &>/dev/null && pgrep -f "wezterm" &>/dev/null; then
             wezterm cli reload-configuration 2>/dev/null && \
                 print_success "WezTerm reloaded" || true
         fi
