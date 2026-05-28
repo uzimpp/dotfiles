@@ -1,9 +1,35 @@
 #!/bin/bash
 
 # Dotfiles Installation Script
-# This script installs all dependencies and applications via Homebrew
+# Installs CLI dependencies via the platform's native package manager
+# (Homebrew on macOS, apt on Debian/Ubuntu/WSL, winget on native Windows).
+# GUI apps and fonts are installed on macOS and Windows; install them
+# manually on Linux/WSL.
+#
+# This script can also be sourced (e.g. by setup.sh) — main() only runs
+# when the file is executed directly, not when sourced.
 
 set -e
+
+# ============================================================================
+# OS Detection
+# ============================================================================
+detect_os() {
+    case "$(uname -s)" in
+        Darwin) echo "macos" ;;
+        Linux)
+            if grep -qi microsoft /proc/version 2>/dev/null || [ -n "$WSL_DISTRO_NAME" ]; then
+                echo "wsl"
+            else
+                echo "linux"
+            fi
+            ;;
+        MINGW* | MSYS* | CYGWIN*) echo "windows" ;;
+        *) echo "unsupported" ;;
+    esac
+}
+
+OS="$(detect_os)"
 
 # ============================================================================
 # Colors and Formatting
@@ -39,7 +65,8 @@ print_step() { echo -e "${BLUE}${ARROW}${NC} $1"; }
 # Configuration
 # ============================================================================
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DRY_RUN=false
+# DRY_RUN may be pre-set by setup.sh when install.sh is sourced — keep it.
+DRY_RUN=${DRY_RUN:-false}
 INSTALL_ALL=false
 INSTALL_DEV=false
 INSTALL_APPS=false
@@ -112,6 +139,83 @@ FONTS=(
     "font-geist-mono-nerd-font"
 )
 
+# Map our canonical package names to apt package names.
+# Empty stdout means "no apt package — install manually if needed".
+# Defined as a function (not associative array) for bash 3.2 compatibility on macOS.
+apt_name_for() {
+    case "$1" in
+        git)       echo git ;;
+        zsh)       echo zsh ;;
+        neovim)    echo neovim ;;
+        tmux)      echo tmux ;;
+        fzf)       echo fzf ;;
+        zoxide)    echo zoxide ;;
+        eza)       echo eza ;;
+        bat)       echo bat ;;           # binary may be 'batcat' on older Ubuntu
+        fd)        echo fd-find ;;       # binary is 'fdfind' on Debian/Ubuntu
+        ripgrep)   echo ripgrep ;;
+        delta)     echo git-delta ;;
+        htop)      echo htop ;;
+        tree)      echo tree ;;
+        jq)        echo jq ;;
+        tldr)      echo tldr ;;
+        node)      echo nodejs ;;
+        python)    echo python3 ;;
+        go)        echo golang ;;
+        lua)       echo lua5.4 ;;
+        luarocks)  echo luarocks ;;
+        cmake)     echo cmake ;;
+        make)      echo make ;;
+        gcc)       echo gcc ;;
+        # Tools with no apt package — caller prints a manual-install notice:
+        # starship (handled separately), yq, thefuck, wezterm, lazygit, rust
+        *)         echo "" ;;
+    esac
+}
+
+# Map our canonical package/app names to winget package IDs (native Windows).
+# Empty stdout means "no winget package — install manually / not applicable".
+# Covers both CLI tools and GUI apps since Windows has no separate cask concept.
+winget_name_for() {
+    case "$1" in
+        # CLI tools
+        git)                 echo "Git.Git" ;;
+        neovim)              echo "Neovim.Neovim" ;;
+        starship)            echo "Starship.Starship" ;;
+        fzf)                 echo "junegunn.fzf" ;;
+        zoxide)              echo "ajeetdsouza.zoxide" ;;
+        eza)                 echo "eza-community.eza" ;;
+        bat)                 echo "sharkdp.bat" ;;
+        fd)                  echo "sharkdp.fd" ;;
+        ripgrep)             echo "BurntSushi.ripgrep.MSVC" ;;
+        delta)               echo "dandavison.delta" ;;
+        lazygit)             echo "JesseDuffield.lazygit" ;;
+        jq)                  echo "jqlang.jq" ;;
+        yq)                  echo "MikeFarah.yq" ;;
+        node)                echo "OpenJS.NodeJS" ;;
+        python)              echo "Python.Python.3.12" ;;
+        go)                  echo "GoLang.Go" ;;
+        rust)                echo "Rustlang.Rustup" ;;
+        lua)                 echo "DEVCOM.Lua" ;;
+        cmake)               echo "Kitware.CMake" ;;
+        # GUI apps
+        wezterm)             echo "wez.wezterm" ;;
+        visual-studio-code)  echo "Microsoft.VisualStudioCode" ;;
+        arc)                 echo "TheBrowserCompany.Arc" ;;
+        1password)           echo "AgileBits.1Password" ;;
+        docker)              echo "Docker.DockerDesktop" ;;
+        postman)             echo "Postman.Postman" ;;
+        discord)             echo "Discord.Discord" ;;
+        notion)              echo "Notion.Notion" ;;
+        figma)               echo "Figma.Figma" ;;
+        spotify)             echo "Spotify.Spotify" ;;
+        # No usable winget package / not applicable on Windows:
+        #   zsh, tmux, htop, tree, tldr, thefuck, luarocks, make, gcc,
+        #   ghostty, raycast, Nerd Fonts (install manually)
+        *)                   echo "" ;;
+    esac
+}
+
 # ============================================================================
 # Functions
 # ============================================================================
@@ -173,26 +277,41 @@ list_packages() {
     done
 
     print_header "Applications (--apps)"
-    for app in "${APPS[@]}"; do
-        if brew list --cask "$app" &>/dev/null 2>&1; then
-            print_success "$app"
-        else
+    if [ "$OS" = "macos" ]; then
+        for app in "${APPS[@]}"; do
+            if brew list --cask "$app" &>/dev/null 2>&1; then
+                print_success "$app"
+            else
+                print_info "$app"
+            fi
+        done
+    elif [ "$OS" = "windows" ]; then
+        for app in "${APPS[@]}"; do
             print_info "$app"
-        fi
-    done
+        done
+    else
+        print_info "GUI apps not auto-installed on $OS (install manually)"
+    fi
 
     print_header "Fonts (--fonts)"
-    for font in "${FONTS[@]}"; do
-        if brew list --cask "$font" &>/dev/null 2>&1; then
-            print_success "$font"
-        else
-            print_info "$font"
-        fi
-    done
+    if [ "$OS" = "macos" ]; then
+        for font in "${FONTS[@]}"; do
+            if brew list --cask "$font" &>/dev/null 2>&1; then
+                print_success "$font"
+            else
+                print_info "$font"
+            fi
+        done
+    else
+        print_info "Fonts not auto-installed on $OS (install Nerd Fonts manually)"
+    fi
     echo ""
 }
 
 install_homebrew() {
+    # Only run on macOS; Linux/WSL use apt.
+    [ "$OS" = "macos" ] || return 0
+
     if ! command -v brew &>/dev/null; then
         print_header "Installing Homebrew"
         if [ "$DRY_RUN" = true ]; then
@@ -210,34 +329,118 @@ install_homebrew() {
     fi
 }
 
+# apt-get install wrapper. Uses sudo if not already root.
+apt_install() {
+    local pkg="$1"
+    local sudo_cmd=""
+    [ "$(id -u)" -ne 0 ] && sudo_cmd="sudo"
+    DEBIAN_FRONTEND=noninteractive $sudo_cmd apt-get install -y "$pkg"
+}
+
+apt_update_once() {
+    # Only refresh package index once per script run.
+    [ "$APT_UPDATED" = true ] && return 0
+    [ "$DRY_RUN" = true ] && { APT_UPDATED=true; return 0; }
+    local sudo_cmd=""
+    [ "$(id -u)" -ne 0 ] && sudo_cmd="sudo"
+    print_step "Updating apt package lists..."
+    $sudo_cmd apt-get update -qq || print_warning "apt-get update failed"
+    APT_UPDATED=true
+}
+
+# Install starship via its official installer (no apt package).
+install_starship_official() {
+    command -v starship &>/dev/null && { print_success "starship (already installed)"; return 0; }
+    if [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would install starship via official installer"
+    else
+        print_step "Installing starship via official installer..."
+        curl -fsSL https://starship.rs/install.sh | sh -s -- --yes \
+            || print_warning "Failed to install starship"
+    fi
+}
+
+# Check whether a winget package ID is already installed.
+winget_is_installed() {
+    winget list --exact --id "$1" 2>/dev/null | grep -qi -- "$1"
+}
+
+# Install one package (CLI tool or GUI app) by canonical name via winget.
+winget_install_one() {
+    local pkg="$1"
+    local id
+    id="$(winget_name_for "$pkg")"
+
+    if [ -z "$id" ]; then
+        print_warning "$pkg (no winget package — install manually)"
+        return 0
+    fi
+
+    if winget_is_installed "$id"; then
+        print_success "$pkg (already installed)"
+    elif [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would install: $id (for $pkg)"
+    else
+        print_step "Installing $id (for $pkg)..."
+        winget install --exact --id "$id" --silent \
+            --accept-package-agreements --accept-source-agreements \
+            || print_warning "Failed to install $id"
+    fi
+}
+
+# Install one formula on the current OS.
+install_one_formula() {
+    local pkg="$1"
+
+    if [ "$OS" = "macos" ]; then
+        if brew list "$pkg" &>/dev/null 2>&1; then
+            print_success "$pkg (already installed)"
+        elif [ "$DRY_RUN" = true ]; then
+            print_step "[DRY RUN] Would install: $pkg"
+        else
+            print_step "Installing $pkg..."
+            brew install "$pkg" || print_warning "Failed to install $pkg"
+        fi
+        return 0
+    fi
+
+    # Native Windows path: winget for everything.
+    if [ "$OS" = "windows" ]; then
+        winget_install_one "$pkg"
+        return 0
+    fi
+
+    # Linux / WSL path: use apt with mapped name, or special-case.
+    if [ "$pkg" = "starship" ]; then
+        install_starship_official
+        return 0
+    fi
+
+    local apt_name
+    apt_name="$(apt_name_for "$pkg")"
+    if [ -z "$apt_name" ]; then
+        print_warning "$pkg (no apt package — install manually)"
+        return 0
+    fi
+
+    if dpkg -s "$apt_name" &>/dev/null; then
+        print_success "$pkg (already installed)"
+    elif [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would install: $apt_name (for $pkg)"
+    else
+        apt_update_once
+        print_step "Installing $apt_name (for $pkg)..."
+        apt_install "$apt_name" || print_warning "Failed to install $apt_name"
+    fi
+}
+
 install_formulas() {
     local name="$1"
     shift
-    local packages=("$@")
-
     print_header "Installing $name"
-
-    local to_install=()
-    for pkg in "${packages[@]}"; do
-        if brew list "$pkg" &>/dev/null 2>&1; then
-            print_success "$pkg (already installed)"
-        else
-            to_install+=("$pkg")
-        fi
+    for pkg in "$@"; do
+        install_one_formula "$pkg"
     done
-
-    if [ ${#to_install[@]} -gt 0 ]; then
-        if [ "$DRY_RUN" = true ]; then
-            for pkg in "${to_install[@]}"; do
-                print_step "[DRY RUN] Would install: $pkg"
-            done
-        else
-            for pkg in "${to_install[@]}"; do
-                print_step "Installing $pkg..."
-                brew install "$pkg" || print_warning "Failed to install $pkg"
-            done
-        fi
-    fi
 }
 
 install_casks() {
@@ -245,8 +448,23 @@ install_casks() {
     shift
     local casks=("$@")
 
-    print_header "Installing $name"
+    # Native Windows: GUI apps install via winget (no separate cask concept).
+    if [ "$OS" = "windows" ]; then
+        print_header "Installing $name"
+        for cask in "${casks[@]}"; do
+            winget_install_one "$cask"
+        done
+        return 0
+    fi
 
+    # Casks are macOS-only (Homebrew). Linux/WSL: print notice and skip.
+    if [ "$OS" != "macos" ]; then
+        print_header "Skipping $name"
+        print_info "GUI apps are not auto-installed on $OS — install them manually."
+        return 0
+    fi
+
+    print_header "Installing $name"
     for cask in "${casks[@]}"; do
         if brew list --cask "$cask" &>/dev/null 2>&1; then
             print_success "$cask (already installed)"
@@ -264,43 +482,47 @@ install_casks() {
 # ============================================================================
 # Parse Arguments
 # ============================================================================
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --all|-a)
-            INSTALL_ALL=true
-            shift
-            ;;
-        --dev|-d)
-            INSTALL_DEV=true
-            shift
-            ;;
-        --apps)
-            INSTALL_APPS=true
-            shift
-            ;;
-        --fonts|-f)
-            INSTALL_FONTS=true
-            shift
-            ;;
-        --dry-run|-n)
-            DRY_RUN=true
-            shift
-            ;;
-        --list|-l)
-            list_packages
-            exit 0
-            ;;
-        --help|-h)
-            show_help
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            show_help
-            exit 1
-            ;;
-    esac
-done
+# Only parse arguments when executed directly. When sourced by setup.sh the
+# parent's positional parameters are not ours to interpret.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --all|-a)
+                INSTALL_ALL=true
+                shift
+                ;;
+            --dev|-d)
+                INSTALL_DEV=true
+                shift
+                ;;
+            --apps)
+                INSTALL_APPS=true
+                shift
+                ;;
+            --fonts|-f)
+                INSTALL_FONTS=true
+                shift
+                ;;
+            --dry-run|-n)
+                DRY_RUN=true
+                shift
+                ;;
+            --list|-l)
+                list_packages
+                exit 0
+                ;;
+            --help|-h)
+                show_help
+                exit 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+fi
 
 # ============================================================================
 # Main
@@ -311,23 +533,36 @@ main() {
     echo -e "${BOLD}${CYAN}║              Dotfiles Installer                            ║${NC}"
     echo -e "${BOLD}${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
 
+    print_info "Detected OS: $OS"
+
+    if [ "$OS" = "unsupported" ]; then
+        print_error "Unsupported OS. This script supports macOS, Linux (apt), WSL, and Windows (winget via Git Bash)."
+        exit 1
+    fi
+
     if [ "$DRY_RUN" = true ]; then
         print_warning "DRY RUN MODE - No changes will be made"
     fi
 
-    # Install Homebrew first
-    install_homebrew
-
-    # Update Homebrew
-    print_header "Updating Homebrew"
-    if [ "$DRY_RUN" = false ]; then
-        brew update
+    # Native Windows requires winget (provisioned by bootstrap.ps1).
+    if [ "$OS" = "windows" ] && ! command -v winget &>/dev/null; then
+        print_error "winget not found. Install 'App Installer' from the Microsoft Store, or run bootstrap.ps1 first."
+        exit 1
     fi
 
-    # Add font tap
-    if [ "$INSTALL_FONTS" = true ] || [ "$INSTALL_ALL" = true ]; then
+    # macOS-only: install/update Homebrew and add the font tap.
+    if [ "$OS" = "macos" ]; then
+        install_homebrew
+
+        print_header "Updating Homebrew"
         if [ "$DRY_RUN" = false ]; then
-            brew tap homebrew/cask-fonts 2>/dev/null || true
+            brew update
+        fi
+
+        if [ "$INSTALL_FONTS" = true ] || [ "$INSTALL_ALL" = true ]; then
+            if [ "$DRY_RUN" = false ]; then
+                brew tap homebrew/cask-fonts 2>/dev/null || true
+            fi
         fi
     fi
 
@@ -359,8 +594,8 @@ main() {
     else
         print_success "All requested packages have been processed"
 
-        # Reload WezTerm if it was installed and is running
-        if command -v wezterm &>/dev/null && pgrep -f "wezterm" &>/dev/null; then
+        # Reload WezTerm (macOS only — on Linux/WSL WezTerm typically runs elsewhere or not at all)
+        if [ "$OS" = "macos" ] && command -v wezterm &>/dev/null && pgrep -f "wezterm" &>/dev/null; then
             wezterm cli reload-configuration 2>/dev/null && \
                 print_success "WezTerm reloaded" || true
         fi
@@ -375,5 +610,10 @@ main() {
     fi
 }
 
-main
+# Run main() only when executed directly. When sourced (e.g. by setup.sh to
+# reuse install_one_formula / install_casks), the functions are exposed but
+# main() does not run.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main
+fi
 

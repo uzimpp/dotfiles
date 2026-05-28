@@ -74,9 +74,12 @@ return {
 			},
 		})
 
-		vim.cmd.colorscheme("mellifluous")
-
-		vim.schedule(function()
+		-- All overrides live in this function so they re-apply on every
+		-- :colorscheme reload (e.g. the <leader>bg transparency toggle below).
+		-- Previously this was a one-shot vim.schedule(), which meant any
+		-- colorscheme reload silently reverted GitSignsAdd to mellifluous's
+		-- olive-yellow default, NeoTree/Telescope/etc. likewise.
+		local function apply_mellifluous_overrides()
 			local hl = vim.api.nvim_set_hl
 
 			local c = {
@@ -329,7 +332,15 @@ return {
 			if package.loaded["lualine"] then
 				require("lualine").setup({ options = { theme = lualine_theme } })
 			end
-		end)
+		end
+
+		vim.api.nvim_create_autocmd("ColorScheme", {
+			pattern = "mellifluous",
+			callback = apply_mellifluous_overrides,
+		})
+
+		-- Triggers the ColorScheme autocmd above, which applies the overrides.
+		vim.cmd.colorscheme("mellifluous")
 
 		-- Toggle transparency
 		local bg_transparent = true
