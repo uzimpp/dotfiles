@@ -2,8 +2,12 @@
 
 # Dotfiles Installation Script
 # Installs CLI dependencies via the platform's native package manager
-# (Homebrew on macOS, apt on Debian/Ubuntu/WSL). GUI apps and fonts are
-# installed only on macOS; install them manually on Linux/WSL.
+# (Homebrew on macOS, apt on Debian/Ubuntu/WSL, winget on native Windows).
+# GUI apps and fonts are installed on macOS and Windows; install them
+# manually on Linux/WSL.
+#
+# This script can also be sourced (e.g. by setup.sh) — main() only runs
+# when the file is executed directly, not when sourced.
 
 set -e
 
@@ -20,6 +24,7 @@ detect_os() {
                 echo "linux"
             fi
             ;;
+        MINGW* | MSYS* | CYGWIN*) echo "windows" ;;
         *) echo "unsupported" ;;
     esac
 }
@@ -60,7 +65,8 @@ print_step() { echo -e "${BLUE}${ARROW}${NC} $1"; }
 # Configuration
 # ============================================================================
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DRY_RUN=false
+# DRY_RUN may be pre-set by setup.sh when install.sh is sourced — keep it.
+DRY_RUN=${DRY_RUN:-false}
 INSTALL_ALL=false
 INSTALL_DEV=false
 INSTALL_APPS=false
@@ -167,6 +173,49 @@ apt_name_for() {
     esac
 }
 
+# Map our canonical package/app names to winget package IDs (native Windows).
+# Empty stdout means "no winget package — install manually / not applicable".
+# Covers both CLI tools and GUI apps since Windows has no separate cask concept.
+winget_name_for() {
+    case "$1" in
+        # CLI tools
+        git)                 echo "Git.Git" ;;
+        neovim)              echo "Neovim.Neovim" ;;
+        starship)            echo "Starship.Starship" ;;
+        fzf)                 echo "junegunn.fzf" ;;
+        zoxide)              echo "ajeetdsouza.zoxide" ;;
+        eza)                 echo "eza-community.eza" ;;
+        bat)                 echo "sharkdp.bat" ;;
+        fd)                  echo "sharkdp.fd" ;;
+        ripgrep)             echo "BurntSushi.ripgrep.MSVC" ;;
+        delta)               echo "dandavison.delta" ;;
+        lazygit)             echo "JesseDuffield.lazygit" ;;
+        jq)                  echo "jqlang.jq" ;;
+        yq)                  echo "MikeFarah.yq" ;;
+        node)                echo "OpenJS.NodeJS" ;;
+        python)              echo "Python.Python.3.12" ;;
+        go)                  echo "GoLang.Go" ;;
+        rust)                echo "Rustlang.Rustup" ;;
+        lua)                 echo "DEVCOM.Lua" ;;
+        cmake)               echo "Kitware.CMake" ;;
+        # GUI apps
+        wezterm)             echo "wez.wezterm" ;;
+        visual-studio-code)  echo "Microsoft.VisualStudioCode" ;;
+        arc)                 echo "TheBrowserCompany.Arc" ;;
+        1password)           echo "AgileBits.1Password" ;;
+        docker)              echo "Docker.DockerDesktop" ;;
+        postman)             echo "Postman.Postman" ;;
+        discord)             echo "Discord.Discord" ;;
+        notion)              echo "Notion.Notion" ;;
+        figma)               echo "Figma.Figma" ;;
+        spotify)             echo "Spotify.Spotify" ;;
+        # No usable winget package / not applicable on Windows:
+        #   zsh, tmux, htop, tree, tldr, thefuck, luarocks, make, gcc,
+        #   ghostty, raycast, Nerd Fonts (install manually)
+        *)                   echo "" ;;
+    esac
+}
+
 # ============================================================================
 # Functions
 # ============================================================================
@@ -235,6 +284,10 @@ list_packages() {
             else
                 print_info "$app"
             fi
+        done
+    elif [ "$OS" = "windows" ]; then
+        for app in "${APPS[@]}"; do
+            print_info "$app"
         done
     else
         print_info "GUI apps not auto-installed on $OS (install manually)"
@@ -307,6 +360,34 @@ install_starship_official() {
     fi
 }
 
+# Check whether a winget package ID is already installed.
+winget_is_installed() {
+    winget list --exact --id "$1" 2>/dev/null | grep -qi -- "$1"
+}
+
+# Install one package (CLI tool or GUI app) by canonical name via winget.
+winget_install_one() {
+    local pkg="$1"
+    local id
+    id="$(winget_name_for "$pkg")"
+
+    if [ -z "$id" ]; then
+        print_warning "$pkg (no winget package — install manually)"
+        return 0
+    fi
+
+    if winget_is_installed "$id"; then
+        print_success "$pkg (already installed)"
+    elif [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would install: $id (for $pkg)"
+    else
+        print_step "Installing $id (for $pkg)..."
+        winget install --exact --id "$id" --silent \
+            --accept-package-agreements --accept-source-agreements \
+            || print_warning "Failed to install $id"
+    fi
+}
+
 # Install one formula on the current OS.
 install_one_formula() {
     local pkg="$1"
@@ -320,6 +401,12 @@ install_one_formula() {
             print_step "Installing $pkg..."
             brew install "$pkg" || print_warning "Failed to install $pkg"
         fi
+        return 0
+    fi
+
+    # Native Windows path: winget for everything.
+    if [ "$OS" = "windows" ]; then
+        winget_install_one "$pkg"
         return 0
     fi
 
@@ -361,6 +448,15 @@ install_casks() {
     shift
     local casks=("$@")
 
+    # Native Windows: GUI apps install via winget (no separate cask concept).
+    if [ "$OS" = "windows" ]; then
+        print_header "Installing $name"
+        for cask in "${casks[@]}"; do
+            winget_install_one "$cask"
+        done
+        return 0
+    fi
+
     # Casks are macOS-only (Homebrew). Linux/WSL: print notice and skip.
     if [ "$OS" != "macos" ]; then
         print_header "Skipping $name"
@@ -386,43 +482,47 @@ install_casks() {
 # ============================================================================
 # Parse Arguments
 # ============================================================================
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --all|-a)
-            INSTALL_ALL=true
-            shift
-            ;;
-        --dev|-d)
-            INSTALL_DEV=true
-            shift
-            ;;
-        --apps)
-            INSTALL_APPS=true
-            shift
-            ;;
-        --fonts|-f)
-            INSTALL_FONTS=true
-            shift
-            ;;
-        --dry-run|-n)
-            DRY_RUN=true
-            shift
-            ;;
-        --list|-l)
-            list_packages
-            exit 0
-            ;;
-        --help|-h)
-            show_help
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            show_help
-            exit 1
-            ;;
-    esac
-done
+# Only parse arguments when executed directly. When sourced by setup.sh the
+# parent's positional parameters are not ours to interpret.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --all|-a)
+                INSTALL_ALL=true
+                shift
+                ;;
+            --dev|-d)
+                INSTALL_DEV=true
+                shift
+                ;;
+            --apps)
+                INSTALL_APPS=true
+                shift
+                ;;
+            --fonts|-f)
+                INSTALL_FONTS=true
+                shift
+                ;;
+            --dry-run|-n)
+                DRY_RUN=true
+                shift
+                ;;
+            --list|-l)
+                list_packages
+                exit 0
+                ;;
+            --help|-h)
+                show_help
+                exit 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+fi
 
 # ============================================================================
 # Main
@@ -436,12 +536,18 @@ main() {
     print_info "Detected OS: $OS"
 
     if [ "$OS" = "unsupported" ]; then
-        print_error "Unsupported OS. This script supports macOS, Linux (apt), and WSL."
+        print_error "Unsupported OS. This script supports macOS, Linux (apt), WSL, and Windows (winget via Git Bash)."
         exit 1
     fi
 
     if [ "$DRY_RUN" = true ]; then
         print_warning "DRY RUN MODE - No changes will be made"
+    fi
+
+    # Native Windows requires winget (provisioned by bootstrap.ps1).
+    if [ "$OS" = "windows" ] && ! command -v winget &>/dev/null; then
+        print_error "winget not found. Install 'App Installer' from the Microsoft Store, or run bootstrap.ps1 first."
+        exit 1
     fi
 
     # macOS-only: install/update Homebrew and add the font tap.
@@ -504,5 +610,10 @@ main() {
     fi
 }
 
-main
+# Run main() only when executed directly. When sourced (e.g. by setup.sh to
+# reuse install_one_formula / install_casks), the functions are exposed but
+# main() does not run.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main
+fi
 

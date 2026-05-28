@@ -14,34 +14,57 @@ Theme: Anysphere | Font: Geist Mono | Shell: Zsh
 - Telescope - Fuzzy finder for everything
 - Consistent Font - Geist Mono Nerd Font everywhere
 
+## Platform Support
+
+| Platform            | Package manager | Entry point        |
+|---------------------|-----------------|--------------------|
+| macOS               | Homebrew        | `./setup.sh`       |
+| Linux (Debian/Ubuntu) | apt           | `./setup.sh`       |
+| WSL                 | apt             | `./setup.sh`       |
+| Windows (native)    | winget          | `.\bootstrap.ps1`  |
+
+On native Windows the dotfiles run under **Git Bash** — one bash codebase, no
+PowerShell port. `bootstrap.ps1` provisions Git for Windows + winget, then hands
+off to `setup.sh`.
+
 ## Quick Start
 
-### 1. Install Dependencies
+### macOS / Linux / WSL
 
 ```bash
-./install.sh --all
+./setup.sh
 ```
 
-Or install selectively:
+`setup.sh` is interactive: pick your environment, then walk four checkbox
+screens (CLI Tools, Applications, Fonts, Configs). It detects missing packages
+and offers to install them before linking your configs. Reload your shell when
+it finishes:
+
+```bash
+source ~/.zshrc
+```
+
+To install dependencies separately:
+
 ```bash
 ./install.sh              # Essential + terminal tools
+./install.sh --all        # Everything (+ apps + fonts on macOS/Windows)
 ./install.sh --dev        # Add development tools
 ./install.sh --apps       # Add GUI apps
 ./install.sh --fonts      # Add Nerd Fonts
 ./install.sh --list       # Show all packages
 ```
 
-### 2. Setup Symlinks
+### Windows (native)
 
-```bash
-./setup.sh
+In a PowerShell window, from the repo root:
+
+```powershell
+.\bootstrap.ps1
 ```
 
-### 3. Reload Shell
-
-```bash
-source ~/.zshrc
-```
+This installs Git for Windows + winget, checks Developer Mode (recommended for
+real symlinks), then launches the interactive `setup.sh` under Git Bash.
 
 ## Themes
 
@@ -68,8 +91,9 @@ export THEME="anysphere"
 
 ```
 dotfiles/
-├── install.sh          # Install dependencies
-├── setup.sh            # Setup symlinks
+├── install.sh          # Install dependencies (brew / apt / winget)
+├── setup.sh            # Interactive setup + symlinks
+├── bootstrap.ps1       # Native Windows entry point
 ├── Brewfile            # Homebrew packages
 │
 ├── nvim/               # Neovim config
@@ -89,6 +113,12 @@ dotfiles/
 │
 ├── starship/           # Starship prompt
 │   └── starship.toml
+│
+├── powershell/         # PowerShell profile (Windows)
+│   └── Microsoft.PowerShell_profile.ps1
+│
+├── bash/               # Git Bash .bashrc (Windows)
+│   └── .bashrc
 │
 └── zsh/                # Zsh shell
     ├── .zshrc
