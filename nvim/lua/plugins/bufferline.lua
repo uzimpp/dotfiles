@@ -77,16 +77,7 @@ return {
     vim.keymap.set('n', '<Tab>', '<cmd>BufferLineCycleNext<CR>', { desc = 'Next buffer' })
     vim.keymap.set('n', '<S-Tab>', '<cmd>BufferLineCyclePrev<CR>', { desc = 'Prev buffer' })
 
-    -- Jump to buffer by number (leader + 1-9)
-    vim.keymap.set('n', '<leader>1', function() require('bufferline').go_to(1, true) end, { desc = 'Buffer 1' })
-    vim.keymap.set('n', '<leader>2', function() require('bufferline').go_to(2, true) end, { desc = 'Buffer 2' })
-    vim.keymap.set('n', '<leader>3', function() require('bufferline').go_to(3, true) end, { desc = 'Buffer 3' })
-    vim.keymap.set('n', '<leader>4', function() require('bufferline').go_to(4, true) end, { desc = 'Buffer 4' })
-    vim.keymap.set('n', '<leader>5', function() require('bufferline').go_to(5, true) end, { desc = 'Buffer 5' })
-    vim.keymap.set('n', '<leader>6', function() require('bufferline').go_to(6, true) end, { desc = 'Buffer 6' })
-    vim.keymap.set('n', '<leader>7', function() require('bufferline').go_to(7, true) end, { desc = 'Buffer 7' })
-    vim.keymap.set('n', '<leader>8', function() require('bufferline').go_to(8, true) end, { desc = 'Buffer 8' })
-    vim.keymap.set('n', '<leader>9', function() require('bufferline').go_to(9, true) end, { desc = 'Buffer 9' })
+    -- Note: <leader>1-9 are handled by harpoon for quick file navigation.
 
     -- Move buffer position
     vim.keymap.set('n', '<leader>[', '<cmd>BufferLineMovePrev<CR>', { desc = 'Move buffer left' })
