@@ -1,5 +1,9 @@
--- Harpoon: Quick file navigation (marked files)
--- Using <leader>m prefix for "marked" files
+-- Harpoon: Quick file navigation with pinned slots
+-- <leader>1-9      → jump to harpoon slot
+-- <leader>ha       → append current file to list
+-- <leader>h1-9     → pin current file to specific slot
+-- <leader>hh       → toggle harpoon menu
+-- <leader>hp/hn    → cycle prev/next
 return {
   'ThePrimeagen/harpoon',
   branch = 'harpoon2',
@@ -8,38 +12,47 @@ return {
     local harpoon = require('harpoon')
     harpoon:setup()
 
-    -- Harpoon menu and add
-    vim.keymap.set('n', '<leader>m', function()
+    -- Toggle harpoon menu
+    vim.keymap.set('n', '<leader>hh', function()
       harpoon.ui:toggle_quick_menu(harpoon:list())
     end, { desc = 'Harpoon: Toggle menu' })
 
-    vim.keymap.set('n', '<leader>M', function()
+    -- Append current file to end of harpoon list
+    vim.keymap.set('n', '<leader>ha', function()
       harpoon:list():append()
-    end, { desc = 'Harpoon: Mark file' })
+    end, { desc = 'Harpoon: Add file' })
 
-    -- Quick access to marked files (m + number)
-    vim.keymap.set('n', '<leader>m1', function()
-      harpoon:list():select(1)
-    end, { desc = 'Harpoon: Go to mark 1' })
-    vim.keymap.set('n', '<leader>m2', function()
-      harpoon:list():select(2)
-    end, { desc = 'Harpoon: Go to mark 2' })
-    vim.keymap.set('n', '<leader>m3', function()
-      harpoon:list():select(3)
-    end, { desc = 'Harpoon: Go to mark 3' })
-    vim.keymap.set('n', '<leader>m4', function()
-      harpoon:list():select(4)
-    end, { desc = 'Harpoon: Go to mark 4' })
-    vim.keymap.set('n', '<leader>m5', function()
-      harpoon:list():select(5)
-    end, { desc = 'Harpoon: Go to mark 5' })
+    -- Pin current file to a specific slot (overwrites existing entry)
+    local function harpoon_pin(n)
+      local list = harpoon:list()
+      local item = list.config.create_list_item(list.config)
+      for i = #list.items + 1, n do
+        list.items[i] = nil
+      end
+      list.items[n] = item
+      list:send_update()
+    end
 
-    -- Navigate between marked files
-    vim.keymap.set('n', '<leader>mp', function()
+    -- Navigate to harpoon slot (leader + number)
+    for i = 1, 9 do
+      vim.keymap.set('n', '<leader>' .. i, function()
+        harpoon:list():select(i)
+      end, { desc = 'Harpoon: Go to slot ' .. i })
+    end
+
+    -- Pin current file to slot (leader + h + number)
+    for i = 1, 9 do
+      vim.keymap.set('n', '<leader>h' .. i, function()
+        harpoon_pin(i)
+      end, { desc = 'Harpoon: Pin to slot ' .. i })
+    end
+
+    -- Cycle through harpoon files
+    vim.keymap.set('n', '<leader>hp', function()
       harpoon:list():prev()
-    end, { desc = 'Harpoon: Previous mark' })
-    vim.keymap.set('n', '<leader>mn', function()
+    end, { desc = 'Harpoon: Previous file' })
+    vim.keymap.set('n', '<leader>hn', function()
       harpoon:list():next()
-    end, { desc = 'Harpoon: Next mark' })
+    end, { desc = 'Harpoon: Next file' })
   end,
 }
