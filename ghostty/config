@@ -2,18 +2,18 @@
 # Keybindings mirrored from WezTerm
 
 # Fonts
-font-family = "GeistMono Nerd Font"
-font-size = 14
+font-family = "JetbrainsMono Nerd Font"
+font-size = 15
 
-adjust-cell-height = 15.18%
+# adjust-cell-height = 15.18%
 # Window
 window-padding-balance = true
 unfocused-split-opacity = 1
-# background-opacity = 0.9
+background-opacity = 0.9
 resize-overlay = always
 quit-after-last-window-closed = true
 confirm-close-surface = false
-# macos-titlebar-style = hidden
+macos-titlebar-style = hidden
 shell-integration-features = true
 
 # Fullscreen

@@ -12,12 +12,12 @@ config.adjust_window_size_when_changing_font_size = false
 config.check_for_updates = true
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = false
--- config.window_decorations = "RESIZE"
--- config.hide_tab_bar_if_only_one_tab = true
--- config.use_resize_increments = true
+config.window_decorations = "RESIZE"
+config.hide_tab_bar_if_only_one_tab = true
+config.use_resize_increments = true
 
-config.font = wezterm.font("GeistMono Nerd Font", { weight = "Regular" })
-config.font_size = 14
+config.font = wezterm.font("JetbrainsMono Nerd Font", { weight = "Regular" })
+config.font_size = 15
 config.custom_block_glyphs = true
 config.cell_width = 1.0
 config.line_height = 1.0

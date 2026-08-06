@@ -3,6 +3,163 @@ return {
 	lazy = false,
 	priority = 1000,
 	config = function()
+		-- Every UI/plugin override lives here so it re-applies on each
+		-- :colorscheme reload (e.g. the <leader>bg transparency toggle). The
+		-- highlighter API runs after mellifluous' own highlights and survives a
+		-- re-setup(), which is why the previous hand-rolled ColorScheme autocmd
+		-- is no longer needed. Colors are used straight from mellifluous' native
+		-- palette (+ shades), so the UI tracks the colorset. Shade meanings:
+		--   dark_bg = split/float bg, bg2 = cursorline/borders, bg3 = floats/
+		--   selection, fg2 = split text, fg4 = line numbers, fg5 = hidden/dim.
+		local function ui_overrides(hl, colors)
+			-- Git status colors, kept distinct from the colorset accents.
+			local git = {
+				add = "#97b393",
+				change = "#bfb68e",
+				delete = "#d59192",
+				untracked = "#b99bb5",
+			}
+
+			-- Transparent-aware surface backgrounds. We hardcode bg on many
+			-- groups, which would otherwise stay opaque when transparency is on.
+			-- Mirror mellifluous' own gating: a surface goes "NONE" when
+			-- transparency is enabled AND its sub-flag is set, so these overrides
+			-- blend through the <leader>bg toggle just like the built-in groups.
+			local tb = require("mellifluous.config").config.transparent_background or {}
+			local on = tb.enabled
+			local function surface(solid, flag)
+				if flag == nil then
+					flag = true -- main editor surfaces follow the master flag
+				end
+				return (on and flag) and "NONE" or solid
+			end
+			local bg_editor = surface(colors.bg) -- signcolumn, linenr, gitsigns, splits
+			local bg_cline = surface(colors.bg, tb.cursor_line)
+			local bg_sign = surface(colors.dark_bg) -- diagnostic signs (in signcolumn)
+			local bg_dash = surface(colors.dark_bg) -- alpha dashboard
+			local bg_tree = surface(colors.dark_bg, tb.file_tree)
+			local bg_tel = surface(colors.dark_bg, tb.telescope)
+			local bg_float = surface(colors.dark_bg, tb.floating_windows)
+			local bg_status = surface(colors.dark_bg, tb.status_line)
+
+			-- ── General ─────────────────────────────────────────────────────
+			hl.set("Cursor", { bg = colors.fg, fg = colors.bg })
+			hl.set("TermCursor", { link = "Cursor" })
+			hl.set("Comment", { fg = colors.fg4, style = { italic = true } })
+			hl.set("@comment", { link = "Comment" })
+			hl.set("ColorColumn", { bg = colors.dark_bg })
+			hl.set("VertSplit", { bg = bg_editor, fg = colors.fg5 })
+			hl.set("LineNr", { bg = bg_editor, fg = colors.fg4 })
+			hl.set("CursorLineNr", { bg = bg_editor, fg = colors.fg, style = { bold = true, italic = true } })
+			hl.set("CursorColumn", { bg = colors.bg2 })
+			hl.set("CursorLine", { bg = bg_cline })
+			hl.set("SignColumn", { bg = bg_editor, fg = colors.fg5 })
+			hl.set("GitSignsAdd", { bg = bg_editor, fg = git.add })
+			hl.set("GitSignsChange", { bg = bg_editor, fg = git.change })
+			hl.set("GitSignsDelete", { bg = bg_editor, fg = git.delete })
+
+			-- ── Diagnostics ─────────────────────────────────────────────────
+			hl.set("DiagnosticSignWarn", { bg = bg_sign, fg = colors.orange })
+			hl.set("DiagnosticSignError", { bg = bg_sign, fg = colors.red })
+			hl.set("DiagnosticSignInfo", { bg = bg_sign, fg = colors.blue })
+			hl.set("DiagnosticSignHint", { bg = bg_sign, fg = colors.purple })
+			hl.set("DiagnosticSignOk", { bg = bg_sign, fg = colors.green })
+
+			-- ── Alpha Dashboard ─────────────────────────────────────────────
+			hl.set("AlphaBackground", { bg = bg_dash, fg = colors.fg })
+			hl.set("AlphaHeader", { fg = colors.red, bg = bg_dash })
+			hl.set("AlphaButtons", { fg = colors.fg5, bg = bg_dash, style = { italic = true } })
+			hl.set("AlphaFooter", { fg = colors.fg5, bg = bg_dash })
+
+			-- ── Neo-tree ────────────────────────────────────────────────────
+			hl.set("NeoTreeNormal", { bg = bg_tree, fg = colors.fg4 })
+			hl.set("NeoTreeNormalNC", { bg = bg_tree, fg = colors.fg4 })
+			hl.set("NeoTreeEndOfBuffer", { bg = bg_tree, fg = bg_tree })
+			hl.set("NeoTreeCursorLine", { bg = colors.bg3 })
+			hl.set("NeoTreeIndentMarker", { fg = colors.fg4 })
+			hl.set("NeoTreeFileName", { fg = colors.fg4 })
+			hl.set("NeoTreeDirectoryName", { fg = colors.fg4 })
+			hl.set("NeoTreeDirectoryIcon", { fg = colors.fg4 })
+			hl.set("NeoTreeRootName", { fg = colors.orange, style = { bold = true } })
+			hl.set("NeoTreeFloatBorder", { bg = bg_float, fg = colors.bg2 })
+			hl.set("NeoTreeFloatTitle", { bg = bg_float, fg = colors.fg })
+			hl.set("NeoTreeGitAdded", { fg = git.add })
+			hl.set("NeoTreeGitModified", { fg = git.change })
+			hl.set("NeoTreeGitDeleted", { fg = git.delete })
+			hl.set("NeoTreeGitUntracked", { fg = git.untracked })
+			hl.set("NeoTreeDimText", { fg = colors.fg5 })
+			hl.set("NeoTreeDotfile", { fg = colors.fg5 })
+			hl.set("NeoTreeHiddenByName", { fg = colors.fg5 })
+			hl.set("NeoTreeGitIgnored", { fg = colors.fg5 })
+			hl.set("NeoTreeIgnored", { fg = colors.fg5 })
+
+			-- ── Telescope ───────────────────────────────────────────────────
+			hl.set("TelescopeNormal", { bg = bg_tel, fg = colors.fg4 })
+			hl.set("TelescopeBorder", { fg = bg_tel, bg = bg_tel })
+
+			hl.set("TelescopePromptNormal", { bg = bg_tel, fg = colors.fg })
+			hl.set("TelescopePromptBorder", { bg = bg_tel, fg = colors.bg2 })
+			hl.set("TelescopePromptTitle", { bg = bg_tel, fg = colors.fg2 })
+
+			hl.set("TelescopeResultsNormal", { bg = bg_tel, fg = colors.fg2 })
+			hl.set("TelescopeResultsBorder", { bg = bg_tel, fg = colors.bg2 })
+			hl.set("TelescopeResultsTitle", { bg = bg_tel, fg = colors.fg2 })
+			hl.set("TelescopeResultsLineNr", { bg = bg_tel, fg = colors.fg4 })
+			hl.set("TelescopeResultsNumber", { fg = colors.purple })
+			hl.set("TelescopeResultsOperator", { fg = colors.ui_blue })
+			hl.set("TelescopeResultsVariable", { fg = colors.orange })
+
+			hl.set("TelescopePreviewNormal", { bg = surface(colors.bg, tb.telescope) })
+			hl.set("TelescopePreviewBorder", { bg = bg_tel, fg = colors.bg2 })
+			hl.set("TelescopePreviewTitle", { bg = bg_tel, fg = colors.fg2 })
+			hl.set("TelescopePreviewMatch", { bg = colors.bg3, fg = colors.orange })
+			hl.set("TelescopePreviewLine", { bg = colors.bg3 })
+
+			hl.set("TelescopeSelection", { bg = colors.bg3 })
+			hl.set("TelescopeSelectionCaret", { fg = colors.dark_bg })
+			hl.set("TelescopeMatching", { fg = colors.orange, style = { bold = true } })
+
+			-- ── Cmp (popup menu, kept opaque like Pmenu) ────────────────────
+			hl.set("CmpDocumentationBorder", { bg = colors.bg3 })
+			hl.set("CmpItemAbbr", { fg = colors.fg2 })
+			hl.set("CmpItemAbbrDeprecated", { fg = colors.comments })
+			hl.set("CmpItemAbbrMatch", { fg = colors.fg })
+			hl.set("CmpItemKind", { fg = colors.ui_blue })
+
+			-- ── Mason (floating installer UI) ───────────────────────────────
+			hl.set("MasonNormal", { bg = bg_float, fg = colors.fg2 })
+			hl.set("MasonHeader", { bg = colors.orange, fg = colors.bg, style = { bold = true } })
+			hl.set("MasonHeaderSecondary", { bg = colors.purple, fg = colors.bg, style = { bold = true } })
+			hl.set("MasonHighlight", { fg = colors.orange })
+			hl.set("MasonHighlightBlock", { bg = colors.ui_blue, fg = colors.bg })
+			hl.set("MasonHighlightBlockBold", { bg = colors.ui_blue, fg = colors.bg, style = { bold = true } })
+			hl.set("MasonHighlightSecondary", { fg = colors.purple })
+			hl.set("MasonHighlightBlockSecondary", { bg = colors.purple, fg = colors.bg })
+			hl.set("MasonHighlightBlockBoldSecondary", { bg = colors.purple, fg = colors.bg, style = { bold = true } })
+			hl.set("MasonMuted", { fg = colors.fg5 })
+			hl.set("MasonMutedBlock", { bg = colors.bg2, fg = colors.fg4 })
+			hl.set("MasonMutedBlockBold", { bg = colors.bg2, fg = colors.fg, style = { bold = true } })
+			hl.set("MasonError", { fg = colors.red })
+			hl.set("MasonWarning", { fg = colors.orange })
+
+			-- ── WhichKey ────────────────────────────────────────────────────
+			hl.set("WhichKey", { fg = colors.ui_blue, style = { bold = true } }) -- The key itself
+			hl.set("WhichKeyGroup", { fg = colors.blue }) -- A group of keys
+			hl.set("WhichKeyDesc", { fg = colors.purple }) -- The description of the key
+			hl.set("WhichKeySeparator", { fg = colors.fg5 }) -- Separator between key and desc
+			hl.set("WhichKeyFloat", { bg = bg_float }) -- Floating window background
+			hl.set("WhichKeyNormal", { bg = bg_float }) -- Window background (newer versions)
+			hl.set("WhichKeyBorder", { fg = colors.bg2, bg = bg_float }) -- Window border
+			hl.set("WhichKeyValue", { fg = colors.fg2 })
+
+			-- ── Notify / Noice / Statusline ─────────────────────────────────
+			hl.set("NotifyBackground", { bg = surface(colors.bg, tb.floating_windows), fg = colors.fg })
+			hl.set("NoicePopup", { bg = bg_float, fg = colors.fg })
+			hl.set("NoiceCmdlinePopup", { bg = bg_float, fg = colors.fg })
+			hl.set("StatusLineNC", { bg = bg_status, fg = bg_status })
+			hl.set("StatusLine", { bg = bg_status, fg = bg_status })
+		end
+
 		require("mellifluous").setup({
 			colorset = "mellifluous",
 			-- modify some colors for mellifluous colorset
@@ -16,14 +173,14 @@ return {
 						highlighter.set("String", { fg = colors.strings })
 						highlighter.set("Function", { fg = colors.functions })
 						highlighter.set("Constant", { fg = colors.constants })
-						highlighter.set("Comment", { fg = colors.comments })
 						highlighter.set("@keyword", { fg = colors.main_keywords })
 						highlighter.set("@type", { fg = colors.types })
 						highlighter.set("@operator", { fg = colors.operators })
 						highlighter.set("@string", { fg = colors.strings })
 						highlighter.set("@function", { fg = colors.functions })
 						highlighter.set("@constant", { fg = colors.constants })
-						highlighter.set("@comment", { fg = colors.comments })
+						-- UI / plugin overrides (Comment + @comment are set here)
+						ui_overrides(highlighter, colors)
 					end,
 					light = function(highlighter, colors)
 						highlighter.set("Keyword", { fg = colors.main_keywords })
@@ -74,272 +231,6 @@ return {
 			},
 		})
 
-		-- All overrides live in this function so they re-apply on every
-		-- :colorscheme reload (e.g. the <leader>bg transparency toggle below).
-		-- Previously this was a one-shot vim.schedule(), which meant any
-		-- colorscheme reload silently reverted GitSignsAdd to mellifluous's
-		-- olive-yellow default, NeoTree/Telescope/etc. likewise.
-		local function apply_mellifluous_overrides()
-			local hl = vim.api.nvim_set_hl
-
-			local c = {
-				-- Backgrounds
-				bg = "#1a1a1a", -- Normal / default background (editor)
-				ui_bg = "#141414", -- Darker background (NeoTree, LineNr, floats)
-				bg_bright = "#242424", -- Lighter background (Telescope, active lines)
-				bg_visual = "#2d2d2d", -- Visual selection, Pmenu
-				bg_search = "#373737", -- Search, Telescope Selection
-				-- Foregrounds
-				fg = "#CCCCCC", -- Normal text
-				fg_dark = "#AEAEAE", -- Dimmed text (Telescope Normal, comments sometimes)
-				fg_dim = "#515151", -- Very dim (LineNr, out of focus)
-				fg_gutter = "#4d4d4d", -- Gutter/Conceal
-				-- Accents / Syntax
-				red = "#d59192", -- Errors, keywords
-				orange = "#cbaa88", -- Main keywords, accent, alpha header
-				yellow = "#bfb68e", -- Strings, warnings
-				green = "#97b393", -- Additions, strings sometimes
-				blue = "#a8a1be", -- Functions
-				purple = "#b99bb5", -- Constants, hints
-				-- Borders
-				border = "#282828",
-				-- Specific overrides
-				comment = "#564e49",
-				white = "#e9e6d8",
-			}
-
-			-- ── General Overrides ───────────────────────────────────────────
-			hl(0, "Cursor", { bg = c.white, fg = c.bg })
-			hl(0, "TermCursor", { link = "Cursor" })
-			hl(0, "Comment", { fg = c.comment, italic = true })
-			hl(0, "@comment", { link = "Comment" })
-			hl(0, "ColorColumn", { bg = c.ui_bg })
-			hl(0, "VertSplit", { bg = c.bg, fg = c.fg_gutter })
-			hl(0, "LineNr", { bg = c.bg, fg = c.fg_dim })
-			hl(0, "CursorLineNr", { bg = c.bg, fg = c.white, bold = true, italic = true })
-			hl(0, "CursorColumn", { bg = c.bg_bright })
-			hl(0, "SignColumn", { bg = c.bg, fg = c.fg_gutter })
-			hl(0, "GitSignsAdd", { bg = c.bg, fg = c.green })
-			hl(0, "GitSignsChange", { bg = c.bg, fg = c.yellow })
-			hl(0, "GitSignsDelete", { bg = c.bg, fg = c.red })
-			hl(0, "CursorLine", { bg = c.bg })
-
-			-- ── Diagnostics ──────────────────────────────────────────────────
-			hl(0, "DiagnosticSignWarn", { bg = c.bg_ui, fg = c.orange })
-			hl(0, "DiagnosticSignError", { bg = c.bg_ui, fg = c.red })
-			hl(0, "DiagnosticSignInfo", { bg = c.bg_ui, fg = c.blue })
-			hl(0, "DiagnosticSignHint", { bg = c.bg_ui, fg = c.purple })
-			hl(0, "DiagnosticSignOk", { bg = c.bg_ui, fg = c.green })
-
-			-- ── Alpha Dashboard ─────────────────────────────────────────────
-			hl(0, "AlphaBackground", { bg = c.ui_bg, fg = c.fg })
-			hl(0, "AlphaHeader", { fg = c.red, bg = c.ui_bg })
-			hl(0, "AlphaButtons", { fg = c.fg_gutter, bg = c.ui_bg, italic = true })
-			hl(0, "AlphaFooter", { fg = c.fg_gutter, bg = c.ui_bg })
-
-			-- ── Neo-tree ─────────────────────────────────────────
-			hl(0, "NeoTreeNormal", { bg = c.ui_bg, fg = c.fg_dim })
-			hl(0, "NeoTreeNormalNC", { bg = c.ui_bg, fg = c.fg_dim })
-			hl(0, "NeoTreeEndOfBuffer", { bg = c.ui_bg, fg = c.ui_bg })
-			hl(0, "NeoTreeCursorLine", { bg = c.bg_visual })
-			-- hl(0, "NeoTreeWinSeparator", { fg = c.ui_bg, bg = c.ui_bg })
-			hl(0, "NeoTreeIndentMarker", { fg = c.fg_dim })
-			hl(0, "NeoTreeFileName", { fg = c.fg_dim })
-			hl(0, "NeoTreeDirectoryName", { fg = c.fg_dim })
-			hl(0, "NeoTreeDirectoryIcon", { fg = c.fg_dim })
-			hl(0, "NeoTreeRootName", { fg = c.orange, bold = true })
-			hl(0, "NeoTreeFloatBorder", { bg = c.ui_bg, fg = c.border })
-			hl(0, "NeoTreeFloatTitle", { bg = c.ui_bg, fg = c.fg })
-			hl(0, "NeoTreeGitAdded", { fg = c.green })
-			hl(0, "NeoTreeGitModified", { fg = c.yellow })
-			hl(0, "NeoTreeGitDeleted", { fg = c.red })
-			hl(0, "NeoTreeGitUntracked", { fg = c.purple })
-
-			hl(0, "NeoTreeDimText", { fg = c.fg_gutter })
-			hl(0, "NeoTreeDotfile", { fg = c.fg_gutter })
-			hl(0, "NeoTreeHiddenByName", { fg = c.fg_gutter })
-			hl(0, "NeoTreeGitIgnored", { fg = c.fg_gutter })
-			hl(0, "NeoTreeIgnored", { fg = c.fg_gutter })
-			--
-			-- ── Telescope ───────────────────────────────────────────────────
-			hl(0, "TelescopeNormal", { bg = c.ui_bg, fg = c.fg_dim })
-			hl(0, "TelescopeBorder", { fg = c.ui_bg, bg = c.ui_bg })
-
-			hl(0, "TelescopePromptNormal", { bg = c.ui_bg, fg = c.fg })
-			hl(0, "TelescopePromptBorder", { bg = c.ui_bg, fg = c.border })
-			hl(0, "TelescopePromptTitle", { bg = c.ui_bg, fg = c.fg_dark })
-
-			hl(0, "TelescopeResultsNormal", { bg = c.ui_bg, fg = c.fg_dark })
-			hl(0, "TelescopeResultsBorder", { bg = c.ui_bg, fg = c.border })
-			hl(0, "TelescopeResultsTitle", { bg = c.ui_bg, fg = c.fg_dark })
-			hl(0, "TelescopeResultsLineNr", { bg = c.ui_bg, fg = c.fg_dim })
-			hl(0, "TelescopeResultsNumber", { fg = c.purple })
-			hl(0, "TelescopeResultsOperator", { fg = c.cyan })
-			hl(0, "TelescopeResultsVariable", { fg = c.orange })
-
-			hl(0, "TelescopePreviewNormal", { bg = c.bg })
-			hl(0, "TelescopePreviewBorder", { bg = c.ui_bg, fg = c.border })
-			hl(0, "TelescopePreviewTitle", { bg = c.ui_bg, fg = c.fg_dark })
-			hl(0, "TelescopePreviewMatch", { bg = c.bg_visual, fg = c.orange })
-			hl(0, "TelescopePreviewLine", { bg = c.bg_visual })
-
-			hl(0, "TelescopeSelection", { bg = c.bg_visual })
-			hl(0, "TelescopeSelectionCaret", { fg = c.ui_bg })
-			hl(0, "TelescopeMatching", { fg = c.orange, bold = true })
-
-			-- ── Cmp ─────────────────────────────────────────────────────────
-			hl(0, "CmpDocumentationBorder", { bg = c.bg_visual })
-			hl(0, "CmpItemAbbr", { fg = c.fg_dark })
-			hl(0, "CmpItemAbbrDeprecated", { fg = c.comment })
-			hl(0, "CmpItemAbbrMatch", { fg = c.fg })
-			hl(0, "CmpItemKind", { fg = c.cyan })
-
-			-- ── WhichKey ────────────────────────────────────────────────────
-			-- Provide some readable WhichKey highlighting that stands out cleanly
-			hl(0, "WhichKey", { fg = c.cyan, bold = true }) -- The key itself
-			hl(0, "WhichKeyGroup", { fg = c.blue }) -- A group of keys
-			hl(0, "WhichKeyDesc", { fg = c.purple }) -- The description of the key
-			hl(0, "WhichKeySeparator", { fg = c.fg_gutter }) -- The separator between key and desc
-			hl(0, "WhichKeyFloat", { bg = c.ui_bg }) -- Background of the floating window
-			hl(0, "WhichKeyNormal", { bg = c.ui_bg }) -- Background of the window (newer WhichKey versions)
-			hl(0, "WhichKeyBorder", { fg = c.border, bg = c.ui_bg }) -- Border of the window
-			hl(0, "WhichKeyValue", { fg = c.fg_dark })
-
-			-- ── Lualine ─────────────────────────────────────────────────────
-			hl(0, "NotifyBackground", { bg = c.bg, fg = c.fg })
-
-			-- ── Noice ─────────────────────────────────────────────────────
-			hl(0, "NoicePopup", { bg = c.ui_bg, fg = c.fg })
-			hl(0, "NoiceCmdlinePopup", { bg = c.ui_bg, fg = c.fg })
-
-			hl(0, "StatusLineNC", { bg = c.ui_bg, fg = c.ui_bg })
-			hl(0, "StatusLine", { bg = c.ui_bg, fg = c.ui_bg })
-			-- local lualine_theme = {
-			-- 	normal = {
-			-- 		a = { bg = c.blue, fg = c.bg },
-			-- 		b = { bg = c.bg_visual, fg = c.blue },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	insert = {
-			-- 		a = { bg = c.green, fg = c.bg },
-			-- 		b = { bg = c.bg_visual, fg = c.green },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	visual = {
-			-- 		a = { bg = c.purple, fg = c.bg },
-			-- 		b = { bg = c.bg_visual, fg = c.purple },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	replace = {
-			-- 		a = { bg = c.yellow, fg = c.bg },
-			-- 		b = { bg = c.bg_visual, fg = c.yellow },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	command = {
-			-- 		a = { bg = c.orange, fg = c.bg },
-			-- 		b = { bg = c.bg_visual, fg = c.orange },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dim },
-			-- 	},
-			-- 	inactive = {
-			-- 		a = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		b = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- }
-			-- local lualine_theme = {
-			-- 	normal = {
-			-- 		a = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		b = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	insert = {
-			-- 		a = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		b = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	visual = {
-			-- 		a = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		b = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	replace = {
-			-- 		a = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		b = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	command = {
-			-- 		a = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		b = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- 	inactive = {
-			-- 		a = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		b = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 		c = { bg = c.ui_bg, fg = c.fg_dark },
-			-- 	},
-			-- }
-			local lualine_theme = {
-				normal = {
-					a = { bg = c.ui_bg, fg = c.blue},
-					b = { bg = c.ui_bg, fg = c.fg_dark },
-					c = { bg = c.ui_bg, fg = c.fg_dim },
-					x = { bg = c.ui_bg, fg = c.fg_dim },
-					y = { bg = c.ui_bg, fg = c.fg_dim },
-					z = { bg = c.ui_bg, fg = c.fg_dim },
-				},
-				insert = {
-					a = { bg = c.ui_bg, fg = c.green },
-					b = { bg = c.ui_bg, fg = c.fg_dark },
-					c = { bg = c.ui_bg, fg = c.fg_dim },
-					x = { bg = c.ui_bg, fg = c.fg_dim },
-					y = { bg = c.ui_bg, fg = c.fg_dim },
-					z = { bg = c.ui_bg, fg = c.fg_dim },
-				},
-				visual = {
-					a = { bg = c.ui_bg, fg = c.purple },
-					b = { bg = c.ui_bg, fg = c.fg_dark },
-					c = { bg = c.ui_bg, fg = c.fg_dim },
-					x = { bg = c.ui_bg, fg = c.fg_dim },
-					y = { bg = c.ui_bg, fg = c.fg_dim },
-					z = { bg = c.ui_bg, fg = c.fg_dim },
-				},
-				replace = {
-					a = { bg = c.ui_bg, fg = c.yellow },
-					b = { bg = c.ui_bg, fg = c.fg_dark },
-					c = { bg = c.ui_bg, fg = c.fg_dim },
-					x = { bg = c.ui_bg, fg = c.fg_dim },
-					y = { bg = c.ui_bg, fg = c.fg_dim },
-					z = { bg = c.ui_bg, fg = c.fg_dim },
-				},
-				command = {
-					a = { bg = c.ui_bg, fg = c.orange },
-					b = { bg = c.ui_bg, fg = c.fg_dark },
-					c = { bg = c.ui_bg, fg = c.fg_dim },
-					x = { bg = c.ui_bg, fg = c.fg_dim },
-					y = { bg = c.ui_bg, fg = c.fg_dim },
-					z = { bg = c.ui_bg, fg = c.fg_dim },
-				},
-				inactive = {
-					a = { bg = c.ui_bg, fg = c.fg_dark },
-					b = { bg = c.ui_bg, fg = c.fg_dark },
-					c = { bg = c.ui_bg, fg = c.fg_dark },
-					x = { bg = c.ui_bg, fg = c.fg_dark },
-					y = { bg = c.ui_bg, fg = c.fg_dark },
-					z = { bg = c.ui_bg, fg = c.fg_dark },
-				},
-			}
-			package.loaded["lualine.themes.mellifluous"] = lualine_theme
-			if package.loaded["lualine"] then
-				require("lualine").setup({ options = { theme = lualine_theme } })
-			end
-		end
-
-		vim.api.nvim_create_autocmd("ColorScheme", {
-			pattern = "mellifluous",
-			callback = apply_mellifluous_overrides,
-		})
-
-		-- Triggers the ColorScheme autocmd above, which applies the overrides.
 		vim.cmd.colorscheme("mellifluous")
 
 		-- Toggle transparency

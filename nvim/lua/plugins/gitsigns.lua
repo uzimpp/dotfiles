@@ -18,6 +18,11 @@ return {
         topdelete = { text = '‾' },
         changedelete = { text = '▎' },
       },
+      -- Line blame feeds lualine via vim.b.gitsigns_blame_line; virt_text off.
+      current_line_blame = true,
+      current_line_blame_opts = { virt_text = false, delay = 0 },
+      current_line_blame_formatter = '  <author> at <author_time:%d %b %Y>',
+      current_line_blame_formatter_nc = '  Not committed yet',
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
         local function map(mode, l, r, opts)

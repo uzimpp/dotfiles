@@ -84,5 +84,6 @@ export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 # python
 alias python='python3'
 
+alias pip3='pip'
 # GO
 export PATH="$HOME/go/bin:$PATH"

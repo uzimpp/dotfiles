@@ -4,6 +4,9 @@ return {
 	priority = 1000,
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
+		-- The mellifluous statusline theme lives in
+		-- lua/lualine/themes/mellifluous.lua; options.theme = "auto" resolves it
+		-- from the runtimepath when mellifluous is the active colorscheme.
 		local mode = {
 			"mode",
 			fmt = function(str)
@@ -69,15 +72,32 @@ return {
 			"branch",
 			icon = "",
 		}
-		-- -- Git blame component using git-blame.nvim (like VS Code GitLens)
+		-- Read gitsigns' blame cache synchronously so the statusline tracks the
+		-- cursor without waiting on gitsigns' async update.
 		local git_blame = {
 			function()
-				local gitblame = require("gitblame")
-				return gitblame.get_current_blame_text()
+				local ok, gs_cache = pcall(require, "gitsigns.cache")
+				if ok then
+					local bcache = gs_cache.cache[vim.api.nvim_get_current_buf()]
+					local entries = bcache and bcache.blame and bcache.blame.entries
+					local entry = entries and entries[vim.api.nvim_win_get_cursor(0)[1]]
+					if entry then
+						local info = require("gitsigns.util").convert_blame_info(entry)
+						local fmt = info.author == "Not Committed Yet"
+								and "  Not committed yet"
+							or "  <author> at <author_time:%d %b %Y>"
+						return require("gitsigns.blame_formatter").expand_string(
+							fmt,
+							bcache.git_obj.repo.username,
+							info,
+							{ self_author_text = "You" }
+						)
+					end
+				end
+				return vim.b.gitsigns_blame_line or ""
 			end,
 			cond = function()
-				local ok, gitblame = pcall(require, "gitblame")
-				return ok and gitblame.is_blame_text_available()
+				return vim.b.gitsigns_blame_line ~= nil and vim.b.gitsigns_blame_line ~= ""
 			end,
 		}
 
