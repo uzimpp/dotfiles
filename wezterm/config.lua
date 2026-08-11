@@ -5,6 +5,7 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
+config.front_end = "WebGpu"
 config.default_cursor_style = "SteadyBar"
 config.automatically_reload_config = true
 config.window_close_confirmation = "NeverPrompt"
@@ -16,7 +17,7 @@ config.window_decorations = "RESIZE"
 config.hide_tab_bar_if_only_one_tab = true
 config.use_resize_increments = true
 
-config.font = wezterm.font("JetbrainsMono Nerd Font", { weight = "Regular" })
+config.font = wezterm.font("JetBrainsMono Nerd Font", { weight = "Regular" })
 config.font_size = 15
 config.custom_block_glyphs = true
 config.cell_width = 1.0

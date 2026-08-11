@@ -133,9 +133,13 @@ APPS=(
     "spotify"
 )
 
-# Nerd Fonts
+# JetBrainsMono Nerd Font is a hard requirement, not an opt-in extra: WezTerm,
+# Ghostty and VS Code configs in this repo all pin it by name. It's installed
+# unconditionally on every OS (see main()), unlike the purely optional $FONTS.
+REQUIRED_FONT="font-jetbrains-mono-nerd-font"
+
+# Nerd Fonts (optional, gated behind --fonts/--all)
 FONTS=(
-    "font-jetbrains-mono-nerd-font"
     "font-geist-mono-nerd-font"
 )
 
@@ -198,6 +202,7 @@ winget_name_for() {
         rust)                echo "Rustlang.Rustup" ;;
         lua)                 echo "DEVCOM.Lua" ;;
         cmake)               echo "Kitware.CMake" ;;
+        font-jetbrains-mono-nerd-font) echo "DEVCOM.JetBrainsMonoNerdFont" ;;
         # GUI apps
         wezterm)             echo "wez.wezterm" ;;
         visual-studio-code)  echo "Microsoft.VisualStudioCode" ;;
@@ -267,6 +272,30 @@ list_packages() {
         fi
     done
 
+    print_header "Required Font (always installed)"
+    if [ "$OS" = "macos" ]; then
+        if brew list --cask "$REQUIRED_FONT" &>/dev/null 2>&1; then
+            print_success "$REQUIRED_FONT"
+        else
+            print_info "$REQUIRED_FONT"
+        fi
+    elif [ "$OS" = "linux" ] || [ "$OS" = "wsl" ]; then
+        asset="$(nerd_font_asset_for "$REQUIRED_FONT")"
+        if [ -n "$asset" ] && ls "$HOME/.local/share/fonts"/${asset}NerdFont*.ttf &>/dev/null; then
+            print_success "$REQUIRED_FONT"
+        else
+            print_info "$REQUIRED_FONT"
+        fi
+    elif [ "$OS" = "windows" ]; then
+        if winget_is_installed "$(winget_name_for "$REQUIRED_FONT")"; then
+            print_success "$REQUIRED_FONT"
+        else
+            print_info "$REQUIRED_FONT"
+        fi
+    else
+        print_info "$REQUIRED_FONT (install manually on $OS)"
+    fi
+
     print_header "Development (--dev)"
     for pkg in "${DEVELOPMENT[@]}"; do
         if command -v "$pkg" &>/dev/null; then
@@ -297,6 +326,15 @@ list_packages() {
     if [ "$OS" = "macos" ]; then
         for font in "${FONTS[@]}"; do
             if brew list --cask "$font" &>/dev/null 2>&1; then
+                print_success "$font"
+            else
+                print_info "$font"
+            fi
+        done
+    elif [ "$OS" = "linux" ] || [ "$OS" = "wsl" ]; then
+        for font in "${FONTS[@]}"; do
+            asset="$(nerd_font_asset_for "$font")"
+            if [ -n "$asset" ] && ls "$HOME/.local/share/fonts"/${asset}NerdFont*.ttf &>/dev/null; then
                 print_success "$font"
             else
                 print_info "$font"
@@ -360,6 +398,156 @@ install_starship_official() {
     fi
 }
 
+# Minimum Neovim version this config supports (lazy.nvim needs 0.8+, plugins 0.9+).
+NVIM_MIN_MAJOR=0
+NVIM_MIN_MINOR=9
+
+# Map uname -m to the arch slug used in Neovim / Nerd Fonts release assets.
+linux_arch_slug() {
+    case "$(uname -m)" in
+        x86_64)        echo "x86_64" ;;
+        aarch64|arm64) echo "arm64" ;;
+        *)             echo "" ;;
+    esac
+}
+
+# True when the nvim on PATH is new enough for this config.
+nvim_version_ok() {
+    command -v nvim &>/dev/null || return 1
+    local ver major minor
+    ver="$(nvim --version 2>/dev/null | head -1 | sed -n 's/^NVIM v\([0-9]*\)\.\([0-9]*\).*/\1 \2/p')"
+    [ -z "$ver" ] && return 1
+    major="${ver% *}"
+    minor="${ver#* }"
+    [ "$major" -gt "$NVIM_MIN_MAJOR" ] && return 0
+    [ "$major" -eq "$NVIM_MIN_MAJOR" ] && [ "$minor" -ge "$NVIM_MIN_MINOR" ]
+}
+
+# Install Neovim on Linux/WSL from the official GitHub release tarball.
+# apt's neovim is far too old for this config (0.6.x on Ubuntu 22.04), which
+# fails with "attempt to call field 'nvim_create_autocmd' (a nil value)".
+install_neovim_linux() {
+    if nvim_version_ok; then
+        print_success "neovim $(nvim --version | head -1 | awk '{print $2}') (already installed)"
+        return 0
+    fi
+
+    local arch
+    arch="$(linux_arch_slug)"
+    if [ -z "$arch" ]; then
+        print_warning "neovim: unsupported arch $(uname -m) — install >= $NVIM_MIN_MAJOR.$NVIM_MIN_MINOR manually"
+        return 0
+    fi
+
+    local tarball="nvim-linux-${arch}.tar.gz"
+    local url="https://github.com/neovim/neovim/releases/latest/download/${tarball}"
+
+    if [ "$DRY_RUN" = true ]; then
+        print_step "[DRY RUN] Would install neovim from $url into /opt"
+        return 0
+    fi
+
+    local sudo_cmd=""
+    [ "$(id -u)" -ne 0 ] && sudo_cmd="sudo"
+
+    # Remove the stale apt build so its /usr/bin/nvim can't shadow ours.
+    if dpkg -s neovim &>/dev/null; then
+        print_step "Removing outdated apt neovim..."
+        $sudo_cmd apt-get remove -y neovim neovim-runtime >/dev/null 2>&1 || true
+    fi
+
+    print_step "Downloading neovim ($arch) from GitHub releases..."
+    local tmp
+    tmp="$(mktemp -d)"
+    if ! curl -fL --progress-bar -o "$tmp/$tarball" "$url"; then
+        print_warning "Failed to download $tarball — install neovim manually"
+        rm -rf "$tmp"
+        return 0
+    fi
+
+    print_step "Extracting to /opt/nvim-linux-${arch}..."
+    $sudo_cmd rm -rf "/opt/nvim-linux-${arch}"
+    if $sudo_cmd tar -C /opt -xzf "$tmp/$tarball"; then
+        $sudo_cmd ln -sf "/opt/nvim-linux-${arch}/bin/nvim" /usr/local/bin/nvim
+    else
+        print_warning "Failed to extract $tarball"
+    fi
+    rm -rf "$tmp"
+
+    hash -r 2>/dev/null || true
+    if nvim_version_ok; then
+        print_success "neovim $(nvim --version | head -1 | awk '{print $2}')"
+    else
+        print_warning "neovim still older than $NVIM_MIN_MAJOR.$NVIM_MIN_MINOR — check 'which -a nvim'"
+    fi
+}
+
+# Map our canonical font cask names to Nerd Fonts release asset names.
+nerd_font_asset_for() {
+    case "$1" in
+        font-jetbrains-mono-nerd-font) echo "JetBrainsMono" ;;
+        font-geist-mono-nerd-font)     echo "GeistMono" ;;
+        *)                             echo "" ;;
+    esac
+}
+
+# Install Nerd Fonts on Linux/WSL from the ryanoasis/nerd-fonts releases.
+# Takes the canonical font names to install as arguments (not $FONTS
+# directly), so callers can install a subset — e.g. just $REQUIRED_FONT.
+install_fonts_linux() {
+    local font_dir="$HOME/.local/share/fonts"
+
+    for font in "$@"; do
+        local asset
+        asset="$(nerd_font_asset_for "$font")"
+        if [ -z "$asset" ]; then
+            print_warning "$font (no Nerd Fonts asset mapping — install manually)"
+            continue
+        fi
+
+        # Nerd Fonts name files like "JetBrainsMonoNerdFont-Regular.ttf".
+        if ls "$font_dir"/${asset}NerdFont*.ttf &>/dev/null; then
+            print_success "$font (already installed)"
+            continue
+        fi
+
+        local url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${asset}.zip"
+        if [ "$DRY_RUN" = true ]; then
+            print_step "[DRY RUN] Would install $font from $url into $font_dir"
+            continue
+        fi
+
+        if ! command -v unzip &>/dev/null; then
+            print_step "Installing unzip (needed to extract fonts)..."
+            apt_update_once
+            apt_install unzip || { print_warning "unzip unavailable — skipping fonts"; return 0; }
+        fi
+
+        print_step "Downloading $asset Nerd Font..."
+        local tmp
+        tmp="$(mktemp -d)"
+        if ! curl -fL --progress-bar -o "$tmp/$asset.zip" "$url"; then
+            print_warning "Failed to download $asset.zip"
+            rm -rf "$tmp"
+            continue
+        fi
+
+        mkdir -p "$font_dir"
+        # -o overwrite, -j flatten; skip the licence/readme files in the archive.
+        if unzip -oj "$tmp/$asset.zip" '*.ttf' '*.otf' -d "$font_dir" >/dev/null; then
+            print_success "$font"
+        else
+            print_warning "Failed to extract $asset.zip"
+        fi
+        rm -rf "$tmp"
+    done
+
+    if [ "$DRY_RUN" != true ] && command -v fc-cache &>/dev/null; then
+        print_step "Rebuilding font cache..."
+        fc-cache -f "$font_dir" >/dev/null 2>&1 || print_warning "fc-cache failed"
+    fi
+}
+
 # Check whether a winget package ID is already installed.
 winget_is_installed() {
     winget list --exact --id "$1" 2>/dev/null | grep -qi -- "$1"
@@ -416,6 +604,12 @@ install_one_formula() {
         return 0
     fi
 
+    # apt's neovim is too old for this config — always use the GitHub release.
+    if [ "$pkg" = "neovim" ]; then
+        install_neovim_linux
+        return 0
+    fi
+
     local apt_name
     apt_name="$(apt_name_for "$pkg")"
     if [ -z "$apt_name" ]; then
@@ -454,6 +648,13 @@ install_casks() {
         for cask in "${casks[@]}"; do
             winget_install_one "$cask"
         done
+        return 0
+    fi
+
+    # Nerd Fonts on Linux/WSL come from the nerd-fonts GitHub releases.
+    if [ "$name" = "Nerd Fonts" ] && { [ "$OS" = "linux" ] || [ "$OS" = "wsl" ]; }; then
+        print_header "Installing $name"
+        install_fonts_linux "${casks[@]}"
         return 0
     fi
 
@@ -559,16 +760,19 @@ main() {
             brew update
         fi
 
-        if [ "$INSTALL_FONTS" = true ] || [ "$INSTALL_ALL" = true ]; then
-            if [ "$DRY_RUN" = false ]; then
-                brew tap homebrew/cask-fonts 2>/dev/null || true
-            fi
+        # Tap unconditionally — $REQUIRED_FONT installs on every run, not just --fonts.
+        if [ "$DRY_RUN" = false ]; then
+            brew tap homebrew/cask-fonts 2>/dev/null || true
         fi
     fi
 
     # Always install essentials and terminal tools
     install_formulas "Essential Tools" "${ESSENTIAL[@]}"
     install_formulas "Terminal & Shell" "${TERMINAL[@]}"
+
+    # Always install the required Nerd Font — WezTerm/Ghostty/VS Code configs
+    # hard-code its family name, so it can't be left to --fonts/--all opt-in.
+    install_casks "Nerd Fonts" "$REQUIRED_FONT"
 
     # Optional installs based on flags
     if [ "$INSTALL_DEV" = true ] || [ "$INSTALL_ALL" = true ]; then

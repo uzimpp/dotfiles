@@ -487,6 +487,12 @@ is_cask_installed() {
         local id
         id="$(winget_name_for "$name")"
         [ -n "$id" ] && winget_is_installed "$id"
+    elif [ "$OS" = "linux" ] || [ "$OS" = "wsl" ]; then
+        # Fonts are the only $name this OS can check (via install_fonts_linux's
+        # own on-disk convention); GUI apps have no auto-install path here.
+        local asset
+        asset="$(nerd_font_asset_for "$name")"
+        [ -n "$asset" ] && ls "$HOME/.local/share/fonts"/${asset}NerdFont*.ttf &>/dev/null
     else
         return 1
     fi
@@ -558,7 +564,7 @@ choose_fonts() {
     _menu_reset
     local font
     for font in "${FONTS[@]}"; do
-        if [ "$OS" = "macos" ]; then
+        if [ "$OS" = "macos" ] || [ "$OS" = "linux" ] || [ "$OS" = "wsl" ]; then
             _menu_add "$font" "$font" 0 1
         else
             _menu_add "$font" "$font  (install manually on $OS)" 1 0
@@ -635,6 +641,9 @@ install_handoff() {
     for f in $SELECTED_FONTS; do
         is_cask_installed "$f" || missing_fonts+=("$f")
     done
+    # $REQUIRED_FONT is a hard requirement (WezTerm/Ghostty/VS Code pin it by
+    # name) — check it regardless of what was picked on the Fonts screen.
+    is_cask_installed "$REQUIRED_FONT" || missing_fonts+=("$REQUIRED_FONT")
 
     local total=$(( ${#missing_tools[@]} + ${#missing_apps[@]} + ${#missing_fonts[@]} ))
     if [ "$total" -eq 0 ]; then

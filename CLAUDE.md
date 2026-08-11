@@ -40,7 +40,7 @@ Both `install.sh` and `setup.sh` detect the host OS via a small `detect_os()` he
 
 **install.sh** branches on `$OS`:
 - **macOS**: Homebrew formulas, casks, fonts, auto-reload of WezTerm.
-- **Linux** (Debian/Ubuntu): CLI tools via `apt` (mapped through `apt_name_for()`). Starship via its official installer. GUI apps and fonts must be installed manually.
+- **Linux** (Debian/Ubuntu): CLI tools via `apt` (mapped through `apt_name_for()`). Three exceptions bypass apt: Starship (official installer), **Neovim** (`install_neovim_linux` — official GitHub release tarball into `/opt/nvim-linux-<arch>`, symlinked to `/usr/local/bin/nvim`, because apt ships 0.6.x which predates `nvim_create_autocmd` and lazy.nvim), and **Nerd Fonts** (`install_fonts_linux` — zips from `ryanoasis/nerd-fonts` releases into `~/.local/share/fonts`, mapped by `nerd_font_asset_for()`). GUI apps still must be installed manually.
 - **WSL**: same package handling as Linux.
 - **Windows**: everything via `winget` (mapped through `winget_name_for()`, which covers both CLI tools and GUI apps since Windows has no separate cask concept). Tools with no winget package are skipped with a notice.
 
